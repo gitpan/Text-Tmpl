@@ -17,7 +17,7 @@ T_CONTEXT
 		XSRETURN_UNDEF;
 	}
 T_CODEREF
-	if ($arg == &PL_sv_undef)
+	if ($arg == &sv_undef)
 	{
 		ST(0) = sv_2mortal(newSViv(0));
 		XSRETURN(1);
@@ -27,14 +27,14 @@ T_CODEREF
 	else
 		croak(\"$var is not a code reference\")
 T_CHARSTAR
-	if ($arg == &PL_sv_undef)
+	if ($arg == &sv_undef)
 	{
 		ST(0) = sv_2mortal(newSViv(0));
 		XSRETURN(1);
 	}
-	$var = (char *)SvPV($arg, PL_na);
+	$var = (char *)SvPV($arg, na);
 T_INT
-	if ($arg == &PL_sv_undef)
+	if ($arg == &sv_undef)
 	{
 		ST(0) = sv_2mortal(newSViv(0));
 		XSRETURN(1);

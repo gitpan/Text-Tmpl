@@ -5,11 +5,11 @@
 #include "template.h"
 #include "perl_tags.h"
 
-#ifndef PL_na
-#define PL_na na
+#ifndef na
+#define na PL_na
 #endif
-#ifndef PL_sv_undef
-#define PL_sv_undef sv_undef
+#ifndef sv_undef
+#define sv_undef PL_sv_undef
 #endif
 
 MODULE = Text::Tmpl PACKAGE = Text::Tmpl PREFIX = template_
@@ -72,11 +72,11 @@ template_loop_iteration(ctx, loop_name)
 		char *CLASS = NULL;
 		char *r_loop_name = NULL;
 	INIT:
-		if (loop_name == &PL_sv_undef)
+		if (loop_name == &sv_undef)
 		{
 		    XSRETURN_UNDEF;
 		}
-		r_loop_name = (char *)SvPV(loop_name, PL_na);
+		r_loop_name = (char *)SvPV(loop_name, na);
 	CODE:
 		RETVAL = template_loop_iteration(ctx, r_loop_name);
 	OUTPUT:
@@ -91,11 +91,11 @@ template_parse_file(ctx, template_filename)
 		char *output = NULL;
 		char *r_template_filename = NULL;
 	INIT:
-		if (template_filename == &PL_sv_undef)
+		if (template_filename == &sv_undef)
 		{
 		    XSRETURN_UNDEF;
 		}
-		r_template_filename = (char *)SvPV(template_filename, PL_na);
+		r_template_filename = (char *)SvPV(template_filename, na);
 	CODE:
 		template_parse_file(ctx, r_template_filename, &output);
                 if (output != NULL)
@@ -119,11 +119,11 @@ template_parse_string(ctx, template)
 		char *output = NULL;
 		char *r_template = NULL;
 	INIT:
-		if (template == &PL_sv_undef)
+		if (template == &sv_undef)
 		{
 		    XSRETURN_UNDEF;
 		}
-		r_template = (char *)SvPV(template, PL_na);
+		r_template = (char *)SvPV(template, na);
 	CODE:
 		template_parse_string(ctx, r_template, &output);
                 if (output != NULL)
@@ -184,7 +184,7 @@ template_alias_simple(ctx, old_name, new_name)
 		char *CLASS = NULL;
 		HV *perl_simple_tags = perl_get_hv(PERL_TAGS_SIMPLE_TAG_HASH,
 		                                   TRUE);
-		SV *cref             = &PL_sv_undef;
+		SV *cref             = &sv_undef;
 		HV *stags            = NULL;
 		context_p current;
 		char key[20];
@@ -207,7 +207,7 @@ template_alias_simple(ctx, old_name, new_name)
 			}
 		}
 	CODE:
-		if ((cref != &PL_sv_undef) && (SvTYPE(SvRV(cref)) == SVt_PVCV))
+		if ((cref != &sv_undef) && (SvTYPE(SvRV(cref)) == SVt_PVCV))
 		{
 			CV *code = (CV *)SvRV(cref);
 			hv_store(stags, new_name, strlen(new_name),
@@ -270,7 +270,7 @@ template_alias_pair(ctx,old_open_name,old_close_name,new_open_name,new_close_nam
 		char *CLASS = NULL;
 		HV *perl_tag_pairs = perl_get_hv(PERL_TAGS_TAG_PAIR_HASH,
 		                                 TRUE);
-		SV *cref = &PL_sv_undef;
+		SV *cref = &sv_undef;
 		HV *tagps = NULL;
 		context_p current;
 		char key[20];
@@ -294,7 +294,7 @@ template_alias_pair(ctx,old_open_name,old_close_name,new_open_name,new_close_nam
 			}
 		}
 	CODE:
-		if ((cref != &PL_sv_undef) && (SvTYPE(SvRV(cref)) == SVt_PVCV))
+		if ((cref != &sv_undef) && (SvTYPE(SvRV(cref)) == SVt_PVCV))
 		{
 			CV *code = (CV *)SvRV(cref);
 			hv_store(tagps, new_open_name, strlen(new_open_name),

@@ -10,6 +10,7 @@
 
 #include <EXTERN.h>
 #include <perl.h>
+#include <XSUB.h>
 
 #include <stdio.h>
 #include <context.h>

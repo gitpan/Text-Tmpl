@@ -1,3 +1,9 @@
+0.16	- compatibility release
+	- reversed the #defines for backwards compatibility with na and
+	  sv_undef (schinder@pobox.com)
+	- included XSUB.h in perl_tags.c so that it'll still work with a perl
+	  built with PERL_IMPLICIT_CONTEXT (multiplicity, threads or
+	  perl_object)
 0.15	- bugfix and feature release
 	- fixed template.c problem with systems which don't define MAXPATHLEN
 	  (Artur.Silveira@rezo.com)
@@ -5,9 +11,9 @@
 	- added t/3_long_lists.t to test adding tons of variables to a
 	  context, and tons of loop iterations
 	- simplified the logic of adding to certain linked list structures
-	- fixed warnings from Tmpl.xs
+	- fixed warnings from Tmpl.xs (Artur.Silveira@rezo.com)
 	- removed '-g' flag from default compiler flags (you can always add it 
-	  back if you need it...) (Artur.Silveira@rezo.com)
+	  back if you need it...)
 	- tidied up the code in Tmpl.xs a bit
 	- tidied up the code in typemap a bit
 	- Minor changes to typemap and Tmpl.xs to better support subclassing.
