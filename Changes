@@ -1,3 +1,9 @@
+0.11	- bugfix release
+	- removed t/2_debug.* for now, because the test is filesystem
+	  location dependent. (schinder@pobox.com)
+	- added documentation of the debug tag pair, and extended the
+	  template_syntax document in general.
+	- added context_get_value() call to Tmpl.xs
 0.10	- interim release
 	- updated README file
 	- changed the memory allocation scheme used by the parser so that

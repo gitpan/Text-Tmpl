@@ -136,6 +136,11 @@ template_register_pair(named_context, open_name, close_name, code)
 	OUTPUT:
 		RETVAL
 
+char *
+context_get_value(ctx, name)
+	context_p	ctx
+	char *		name
+
 context_p
 context_get_anonymous_child(ctx)
 	context_p	ctx

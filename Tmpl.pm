@@ -16,7 +16,7 @@ require AutoLoader;
 
 @ISA = qw(DynaLoader);
 
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 bootstrap Text::Tmpl $VERSION;
 
@@ -85,13 +85,11 @@ $return     = $context->B<set_values>($hashref);
 
 $subcontext = $context->B<loop_iteration>($loop_name);
 
-$output     = B<Text::Tmpl::parse_file>($context,
-                 $template_filename);
+$output     = $context->B<parse_file>($template_filename);
 
-$output     = B<Text::Tmpl::parse_string>($context,
-                 $template);
+$output     = $context->B<parse_string>($template);
 
-B<Text::Tmpl::destroy>($context);
+$context->B<destroy>();
 
 =head1 DESCRIPTION
 
@@ -196,7 +194,7 @@ Hopefully none.
 
 =head1 AUTHOR
 
-J. David Lowe, dlowe@webjuice.com
+J. David Lowe, dlowe@pootpoot.com
 
 =head1 SEE ALSO
 

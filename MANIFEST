@@ -54,9 +54,6 @@ t/2_ifn.comp
 t/2_loop.t
 t/2_loop.tmpl
 t/2_loop.comp
-t/2_debug.t
-t/2_debug.tmpl
-t/2_debug.comp
 t/2_ext_simple.t
 t/2_ext_simple.tmpl
 t/2_ext_simple.comp

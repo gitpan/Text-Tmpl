@@ -148,7 +148,7 @@ Hopefully none.
 
 =head1 AUTHOR
 
-J. David Lowe, dlowe@webjuice.com
+J. David Lowe, dlowe@pootpoot.com
 
 =head1 SEE ALSO
 
