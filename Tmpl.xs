@@ -159,7 +159,7 @@ context_p
 context_add_peer(ctx)
 	context_p	ctx
 
-void *
+void
 context_output_contents(ctx, output_contents)
 	context_p	ctx
 	int		output_contents

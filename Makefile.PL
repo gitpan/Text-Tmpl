@@ -3,16 +3,11 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'	   => 'Text::Tmpl',
     'VERSION_FROM' => 'Tmpl.pm',
-    'LIBS'         => '-Llibtmpl/ -ltmpl',
-    'DEFINE'       => '',
-    'OBJECT'       => 'perl_tags.o Tmpl.o',
+    'OBJECT'       => 'context.o default_tags.o nclist.o parser.o '
+                    . 'staglist.o tagplist.o template.o varlist.o '
+                    . 'perl_tags.o Tmpl.o',
     'OPTIMIZE'     => '-O3 -g',
-    'INC'          => '-Ilibtmpl/',
-    'MYEXTLIB'     => 'libtmpl/libtmpl.a',
-    'depend'       => {
-                        'clean:'     => 'libtmpl_clean',
-                        'realclean:' => 'libtmpl_clean',
-                      },
+    'INC'          => '-I.',
     'MAN3PODS'     => {
                         'Tmpl.pm'             => 'blib/man3/Text::Tmpl.3',
                         'libtmpl.pod'         => 'blib/man3/libtmpl.3',
@@ -21,12 +16,15 @@ WriteMakefile(
                       },
 );
 
-sub MY::postamble {
-'
-$(MYEXTLIB): libtmpl/Makefile
-	cd libtmpl && $(MAKE) all
+package MY;
 
-libtmpl_clean: libtmpl/Makefile
-	cd libtmpl && $(MAKE) clean
-';
-}
+sub postamble { '
+
+TMPL_OBJS=context.o default_tags.o nclist.o parser.o \
+          staglist.o tagplist.o template.o varlist.o
+
+libtmpl.a: ${TMPL_OBJS}
+	rm -f $@
+	ar cr $@ ${TMPL_OBJS}
+	ranlib $@
+'; }

@@ -1,3 +1,10 @@
+0.12	- interim release
+	- updated the README file for readability and accuracy
+	- moved libtmpl stuff into base directory & got rid of standalone
+	  Makefile; also added libtmpl.a target to Makefile.PL
+	- tiny fix to Tmpl.xs
+	- removed assumption about gcc from libtmpl/Makefile
+	  (Artur.Silveira@rezo.com)
 0.11	- bugfix release
 	- removed t/2_debug.* for now, because the test is filesystem
 	  location dependent. (schinder@pobox.com)

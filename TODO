@@ -1,5 +1,5 @@
 Stuff that may make it into future versions (patches welcome!)
- . Complete testing during "make test" of all code paths
+ . Port to win32?
  . Consistent, clean error reporting (something errno-like)
  . Make the parser more technically "correct" (i.e. single-pass, stack based
    parsing)
