@@ -1,0 +1,62 @@
+=head1 NAME
+
+template_syntax - description of the syntax of a Text::Tmpl template.
+
+=head1 SYNOPSIS
+
+In general:
+
+<!--#function "argument1", $argument2, "argu" $ment "3"--><!--#endfunction-->
+
+Specifically:
+
+<!--#echo "text"-->
+
+<!--#include "file"-->
+
+<!--#comment-->This won't be printed<!--#endcomment-->
+
+<!--#if "value"-->This will be printed if "value" is "true"<!--#endif-->
+
+<!--#ifn "value"-->This will be printed if "value" is "false"<!--#endifn-->
+
+<!--#loop "loopname"-->This may be printed a bunch of times<!--#endloop-->
+
+=head1 DESCRIPTION
+
+The specific tags listed above are merely the default tags in the template
+library.  It is possible to add tags of your own.
+
+The tag format is: open_tag_delimiter (default: "<!--#") + function name
++ some whitespace + comma-separated argument list (described below)
++ close_tag_delimiter (default: "-->").
+
+Each argument in the comma-separated argument list consists of of variables
+and strings - everything else is ignored.  A variable looks like $foo, where
+foo is any number of alphanumeric characters.  A string is anything (including
+whitespace, newlines, etc...) within double-quotes.  To put literal double
+quotes into a string, escape with a backslash.  For example, the following list:
+
+"argument1", $argument2, "argu" $ment "3"
+
+would become:
+
+argument1, (the value of $argument2), argu(the value of $ment)3
+
+Tag pair nesting is possible (and infinite, at least if you have an infinite
+stack...)  Also, the result of a simple tag evaluation will actually be parsed
+again, so you can (for example) include another template into the current one,
+and it will be parsed.
+
+=head1 BUGS
+
+Hopefully none.  Though this documentation could possibly be considered a
+bug...
+
+=head1 AUTHOR
+
+J. David Lowe, dlowe@webjuice.com
+
+=head1 SEE ALSO
+
+libtmpl(1), Text::Tmpl(1), template_extend(1)

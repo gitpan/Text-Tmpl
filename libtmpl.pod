@@ -1,0 +1,157 @@
+=head1 NAME
+
+libtmpl - Templating system C library
+
+=head1 SYNOPSIS
+
+B<#include "template.h">
+
+context_p
+B<template_init>(void)
+
+int
+B<template_set_delimiters>(char *opentag, char *closetag)
+
+int
+B<template_register_simple>(char *name,
+   void (*function)(context_p, char **, int, char**))
+
+int
+B<template_register_pair>(char named_context,
+   char *open_name, char *close_name,
+   void (*function)(context_p, int, char**))
+
+int
+B<template_set_value>(context_p ctx, char *name,
+   char *value)
+
+int
+B<template_set_debug>(context_p ctx, int debug)
+
+int
+B<template_set_strip>(context_p ctx, int strip)
+
+int
+B<template_set_dir>(context_p ctx, char *directory)
+
+void
+B<template_destroy>(context_p ctx)
+
+context_p
+B<template_loop_iteration>(context_p ctx,
+   char *loop_name)
+
+int
+B<template_parse_file>(context_p ctx,
+   char *template_filename, char **output)
+
+int
+B<template_parse_string>(context_p ctx, char *template,
+   char **output)
+
+=head1 DESCRIPTION
+
+=head2 Design goals
+
+simplicity, reusability, speed, complete separation of logic from
+formatting.
+
+=head2 Feature set
+
+variables, loops, conditionals, extensibility of tags, includes,
+arbitrary delimiters.
+
+=head2 Usage
+
+For starters, make sure you #include "template.h" and link against libtmpl.a.
+
+Each function is described below:
+
+=over 3
+
+=item B<template_init>
+
+This function initializes the library.  It allocates and returns the "global"
+context structure, and also configures all of the default tag behavior.
+
+=item B<template_set_delimiters>
+
+This function lets you change the delimiters marking the beginning and end
+of a tag (by default, these are "<!--#" and "-->".  There is an arbitrary
+limit of 6 characters on these strings.
+
+=item B<template_set_value>
+
+This function stores the name=value pair in the current context.
+
+=item B<template_set_debug>
+
+This function sets the debugging level (from 0 = silent to 2 = verbose).  Note
+that debugging output hasn't been written yet - this is just a placeholder.
+
+=item B<template_set_strip>
+
+This function enables or disables the newline stripping feature.  If enabled,
+the parser removes a single newline (if present) from after any tag.
+
+=item B<template_set_dir>
+
+This function sets the directory where templates will be sought, both by
+parse_file and by the include tag.  Search order is always current directory
+then this searched directory.
+
+=item B<template_loop_iteration>
+
+This function adds an iteration to the loop named loop_name, and returns
+a unique context for that loop iteration.
+
+=item B<template_parse_file>
+
+This function opens template_filename, and parses the contents of
+that file as a template, placing the output into *output.  It allocates
+all the memory for you, but it is up to the programmer to free *output!
+
+=item B<template_parse_string>
+
+This function parses template directly, in the same way that
+template_parse_file does.
+
+=item B<template_register_simple>
+
+This function registers a new simple tag named name, which when encountered
+will cause the parser to call function.  See template_extend(1) for the
+gory details.
+
+=item B<template_register_pair>
+
+This function registers a new tag pair open_name/close_name, which when
+encountered will cause the parser to call function.  See template_extend
+for the gory details.
+
+=item B<template_destroy>
+
+This function blows away all of the memory allocated within the given context.
+You should really *only* call this on the context returned by template_init,
+and only at the end of your code.
+
+=back
+
+=head1 RETURN VALUES
+
+All of the above functions which return int values will return 0 if they fail,
+or 1 otherwise.  The ones which return context_p pointers will return NULL if
+they fail, or a valid pointer otherwise.
+
+=head1 BUGS
+
+Hopefully none.
+
+=head1 AUTHOR
+
+J. David Lowe, dlowe@webjuice.com
+
+=head1 SEE ALSO
+
+Text::Tmpl(1), template_syntax(1), template_extend(1)
+
+=cut

@@ -1,0 +1,23 @@
+TYPEMAP
+context_p				T_CONTEXT
+CV *					T_CODEREF
+
+INPUT
+T_CONTEXT
+	if( sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVMG) )
+		$var = ($type)SvIV((SV*)SvRV( $arg ));
+	else {
+		warn(\"${Package}::$func_name() -- $var is not blessed\");
+		XSRETURN_UNDEF;
+	}
+T_CODEREF
+	if (SvTYPE(SvRV($arg)) == SVt_PVCV)
+		$var = (CV*)SvRV($arg);
+	else
+		croak(\"$var is not a code reference\")
+
+OUTPUT
+T_CODEREF
+	$arg = newRV((SV*)$var);
+T_CONTEXT
+	sv_setref_pv($arg, "Text::Tmpl", (void*)$var);

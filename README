@@ -1,0 +1,37 @@
+DBIx::Table - Class used to represent DBI database tables.
+
+Copyright (c) 1999 WebJuice, L.L.C.  All rights reserved.  This program is
+free software; you can redistribute it and/or modify it under the same terms
+as Perl itself. 
+
+Text::Tmpl is a module for very fast templating. There are dozens of
+templating modules on CPAN, each only a tiny bit different from the
+others. This one is no different - what sets it aside is speed. The
+entire module is implemented as a C library, with only a thin XS/Perl
+layer to make the calls available from Perl. The same templates, then,
+can be used from either Perl or C programs.
+
+This was originally designed to completely isolate HTML programmers
+from module/CGI programmers, or at least completely separate logic
+from content in dynamic web applications. It is syntactically based on
+a similar system written by a friend of mine, Neil Mix, which was
+proprietary and exclusively written in Perl. It shares no code in
+common with this system, or any other.
+
+Prerequisites
+
+A C compiler, a unix (or derivative) machine, and Perl.
+
+At this early stage, this module has only been tested on FreeBSD, Linux and
+Solaris.  I'd be happy to test it on other systems, but I don't have access
+to any.  It is known to not work under Win32, because of assumptions about
+filesystem layout.
+
+Building
+
+  # perl Makefile.PL
+  # make
+
+Installing
+
+  # make install
