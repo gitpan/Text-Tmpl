@@ -1,4 +1,5 @@
 MANIFEST
+CHANGES
 README
 Makefile.PL
 Tmpl.pm
@@ -6,7 +7,6 @@ Tmpl.xs
 typemap
 perl_tags.c
 perl_tags.h
-Text::Tmpl.pod
 libtmpl.pod
 template_syntax.pod
 template_extend.pod

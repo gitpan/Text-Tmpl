@@ -13,13 +13,11 @@ WriteMakefile(
                         'clean:'     => 'libtmpl_clean',
                         'realclean:' => 'libtmpl_clean',
                       },
-    'MAN1PODS'     => {
-                       'template_syntax.pod' => './blib/man1/template_syntax.1',
-                       'template_extend.pod' => './blib/man1/template_extend.1',
-                      },
     'MAN3PODS'     => {
-                       'libtmpl.pod'         => './blib/man3/libtmpl.3',
-                       'Text::Tmpl.pod'      => './blib/man3/Text::Tmpl.3',
+                        'Tmpl.pm'             => 'blib/man3/Text::Tmpl.3',
+                        'libtmpl.pod'         => 'blib/man3/libtmpl.3',
+                        'template_extend.pod' => 'blib/man3/template_extend.3',
+                        'template_syntax.pod' => 'blib/man3/template_syntax.3',
                       },
 );
 
