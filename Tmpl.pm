@@ -3,14 +3,10 @@ package Text::Tmpl;
 use strict;
 use vars qw($VERSION @ISA $AUTOLOAD @EXPORT_OK);
 
-use constant TEMPLATE_DEBUG_NONE => 0;
-use constant TEMPLATE_DEBUG_SOME => 1;
-use constant TEMPLATE_DEBUG_LOTS => 2;
-
 use constant TEMPLATE_TRUE  => '1';
 use constant TEMPLATE_FALSE => '0';
 
-$VERSION = '0.16';
+$VERSION = '0.17';
 
 use Exporter;
 
@@ -19,10 +15,7 @@ require AutoLoader;
 
 @ISA = qw(DynaLoader Exporter);
 
-@EXPORT_OK = qw(TEMPLATE_DEBUG_NONE
-                TEMPLATE_DEBUG_SOME
-                TEMPLATE_DEBUG_LOTS
-                TEMPLATE_TRUE
+@EXPORT_OK = qw(TEMPLATE_TRUE
                 TEMPLATE_FALSE);
 
 bootstrap Text::Tmpl $VERSION;
@@ -118,9 +111,9 @@ $return     = $context->B<alias_pair>($old_open_name,
                  $old_close_name, $new_open_name,
                  $new_close_name);
 
-$return     = $context->B<set_debug>($debug_level);
+$context->B<set_debug>($to_debug_or_not_to_debug);
 
-$return     = $context->B<set_strip>($to_strip_or_not_to);
+$context->B<set_strip>($to_strip_or_not_to_strip);
 
 $return     = $context->B<set_dir>($directory);
 
@@ -135,6 +128,10 @@ $output     = $context->B<parse_file>($template_filename);
 $output     = $context->B<parse_string>($template);
 
 $context->B<destroy>();
+
+$errno      = Text::Tmpl::B<errno>();
+
+$errstr     = Text::Tmpl::B<strerror>();
 
 =head1 DESCRIPTION
 
@@ -177,8 +174,8 @@ current context.
 
 =item B<set_debug>
 
-This function sets the debugging level (from 0 = silent to 2 = verbose).  Note
-that debugging output hasn't been written yet - this is just a placeholder.
+This function turns debugging output on or off.  Note that debugging output
+hasn't been written yet - this is just a placeholder.
 
 =item B<set_strip>
 
@@ -235,6 +232,16 @@ This function blows away all of the memory allocated within the given context.
 You should really B<only> call this on the context returned by
 'new Text::Tmpl', and only at the end of your code.
 
+=item B<errno>
+
+This function returns the error number of the last error - see the RETURN
+VALUES section below.
+
+=item B<strerror>
+
+This function returns a string describing the last error - see the RETURN
+VALUES section below.
+
 =back
 
 =head1 RETURN VALUES
@@ -242,6 +249,9 @@ You should really B<only> call this on the context returned by
 All of the above functions which return numeric values will return 0 if they
 fail, or 1 otherwise.  The ones which return contexts will return undef if
 they fail, or a valid pointer otherwise.
+
+A function which fails will also set a global error number, which you can
+read using the errno() or strerror() package functions.
 
 =head1 BUGS
 

@@ -11,9 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <context.h>
-#include <tagplist.h>
-
+#include <template.h>
 
 /* ====================================================================
  * NAME:          tagplist_init
@@ -31,9 +29,10 @@ tagplist_init()
 {
     tagplist_p tag_pair_list;
 
-    tag_pair_list = (tagplist_p)calloc(1, sizeof(tagplist));
+    tag_pair_list = (tagplist_p)malloc(sizeof(tagplist));
     if (tag_pair_list == NULL)
     { 
+        template_errno = TMPL_EMALLOC;
         return NULL;
     }
 
@@ -102,16 +101,11 @@ tagplist_alias(tagplist_p *tag_pair_list, char *old_open_name,
 {
     tagplist_p current = *tag_pair_list;
 
-    /* Make sure the tag_pair_list is not NULL */
-    if (*tag_pair_list == NULL)
-    {
-        return 0;
-    }
-
     /* Make sure the names are not NULL */
     if ((old_open_name == NULL) || (old_close_name == NULL)
        || (new_open_name == NULL) || (new_close_name == NULL))
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -129,6 +123,7 @@ tagplist_alias(tagplist_p *tag_pair_list, char *old_open_name,
         current = current->next;
     }
 
+    template_errno = TMPL_ENOTAGP;
     return 0;
 }
 
@@ -149,20 +144,24 @@ tagplist_register(tagplist_p *tag_pair_list, char named_context,
                   void (*function) (context_p, int, char**))
 {
     tagplist_p new = NULL;
+    int length;
 
     /* Make sure the function isn't NULL */
     if (function == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
     if ((open_name == NULL) || (close_name == NULL))
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
     if (*tag_pair_list == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -171,13 +170,15 @@ tagplist_register(tagplist_p *tag_pair_list, char named_context,
     new->function      = function;
     new->named_context = named_context;
 
-    new->open_name = (char *)malloc(strlen(open_name) + 1);
-    strncpy(new->open_name, open_name, strlen(open_name));
-    new->open_name[strlen(open_name)] = '\0';
+    length = strlen(open_name);
+    new->open_name = (char *)malloc(length + 1);
+    strncpy(new->open_name, open_name, length);
+    new->open_name[length] = '\0';
 
-    new->close_name = (char *)malloc(strlen(close_name) + 1);
-    strncpy(new->close_name, close_name, strlen(close_name));
-    new->close_name[strlen(close_name)] = '\0';
+    length = strlen(close_name);
+    new->close_name = (char *)malloc(length + 1);
+    strncpy(new->close_name, close_name, length);
+    new->close_name[length] = '\0';
 
     new->next = *tag_pair_list;
 
@@ -214,6 +215,7 @@ tagplist_is_opentag(tagplist_p tag_pair_list, char *open_name)
         current = current->next;
     }
 
+    template_errno = TMPL_ENOTAGP;
     return 0;
 }
 
@@ -247,6 +249,7 @@ tagplist_is_closetag(tagplist_p tag_pair_list, char *open_name,
         current = current->next;
     }
 
+    template_errno = TMPL_ENOTAGP;
     return 0;
 }
 
@@ -268,11 +271,6 @@ tagplist_exec(tagplist_p tag_pair_list, char *open_name, context_p ctx,
 {
     tagplist_p current = tag_pair_list;
 
-    if (tag_pair_list == NULL)
-    {
-        return NULL;
-    }
-
     while (current != NULL)
     {
         if ((current->open_name != NULL) && (current->function != NULL)
@@ -286,7 +284,12 @@ tagplist_exec(tagplist_p tag_pair_list, char *open_name, context_p ctx,
                 if (named_context == NULL)
                 {
                     named_context = context_get_anonymous_child(ctx);
-                    named_context->output_contents = 0;
+                    if (named_context == NULL)
+                    {
+                        return NULL;
+                    }
+
+                    ctx_unset_output(named_context);
                     return(named_context);
                 }
 
@@ -309,5 +312,6 @@ tagplist_exec(tagplist_p tag_pair_list, char *open_name, context_p ctx,
         current = current->next;
     }
 
+    template_errno = TMPL_ENOTAGP;
     return NULL;
 }

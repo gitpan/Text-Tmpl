@@ -1,3 +1,27 @@
+0.17	- bugfix and feature release
+	- moved some constant strings into #defines where they belonged
+	- moved the placeholder debugging code into the new 'flags', and
+	  attendant changes
+	- fixed instances in C code of multiple recalculations of the
+	  lengths of the same string
+	- optimized the context structure by using bitwise 'flags' field
+	  rather than several boolean fields and internal variables
+	- echo tag now echoes all arguments instead of only the first
+	- added 3_deep_nesting.t to test the functioning of extremely deeply
+	  nested contexts
+	- added template_strerror(), Text::Tmpl::errno, Text::Tmpl::strerror
+	  and very basic test code
+	- added template_errno and relevant error reporting code
+	- fixed innumerable cases of duplicated argument checking in C code
+	- fixed a couple of small potential bugs in C code
+	- made boolean tags (if and ifn) treat strings which don't contain
+	  numbers as true rather than false (ak@dasburo.de)
+	- replaced calloc() with malloc() through most of the code
+	- added a pointer to the last peer context (loop iteration) to the
+	  context structure to improve the performance of long loops
+	- integrated with Devel::PPPort v1.0007
+	- added examples/ directory, and a few simple example programs
+	- added C++ class header file template_cc.h
 0.16	- compatibility release
 	- reversed the #defines for backwards compatibility with na and
 	  sv_undef (schinder@pobox.com)

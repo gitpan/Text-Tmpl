@@ -7,6 +7,7 @@ Makefile.PL
 Tmpl.pm
 Tmpl.xs
 typemap
+ppport.h
 perl_tags.c
 perl_tags.h
 libtmpl.pod
@@ -27,10 +28,18 @@ template.c
 template.h
 varlist.c
 varlist.h
+template_cc.h
+examples/Makefile
+examples/README
+examples/tmpl-eg.c
+examples/tmpl-eg.cc
+examples/tmpl-eg-perl
+examples/tmpl-eg.tmpl
 t/0_use.t
 t/1_basic.t
 t/1_basic.tmpl
 t/1_exporter.t
+t/1_errno.t
 t/2_tag_whitespace.t
 t/2_tag_whitespace.tmpl
 t/2_tag_whitespace.comp
@@ -74,3 +83,4 @@ t/3_subclass.tmpl
 t/3_subclass.comp
 t/3_long_lists.t
 t/3_huge_input.t
+t/3_deep_nesting.t

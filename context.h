@@ -9,6 +9,27 @@ typedef struct context_struct *context_p;
 #include <staglist.h>
 #include <tagplist.h>
 
+#define CTX_FLAG_NONE      0
+#define CTX_FLAG_OUTPUT    (1 << 0)
+#define CTX_FLAG_ANONYMOUS (1 << 1)
+#define CTX_FLAG_STRIP     (1 << 2)
+#define CTX_FLAG_DEBUG     (1 << 3)
+
+#define ctx_is_output(x)    ((x)->flags & CTX_FLAG_OUTPUT)
+#define ctx_is_anonymous(x) ((x)->flags & CTX_FLAG_ANONYMOUS)
+#define ctx_is_strip(x)     ((x)->flags & CTX_FLAG_STRIP)
+#define ctx_is_debug(x)     ((x)->flags & CTX_FLAG_DEBUG)
+
+#define ctx_set_output(x)    ((x)->flags |= CTX_FLAG_OUTPUT)
+#define ctx_set_anonymous(x) ((x)->flags |= CTX_FLAG_ANONYMOUS)
+#define ctx_set_strip(x)     ((x)->flags |= CTX_FLAG_STRIP)
+#define ctx_set_debug(x)     ((x)->flags |= CTX_FLAG_DEBUG)
+
+#define ctx_unset_output(x)    ((x)->flags &= ~ CTX_FLAG_OUTPUT)
+#define ctx_unset_anonymous(x) ((x)->flags &= ~ CTX_FLAG_ANONYMOUS)
+#define ctx_unset_strip(x)     ((x)->flags &= ~ CTX_FLAG_STRIP)
+#define ctx_unset_debug(x)     ((x)->flags &= ~ CTX_FLAG_DEBUG)
+
 struct context_struct
 {
     /* table of variables and values in this list */
@@ -30,11 +51,12 @@ struct context_struct
        in this loop */
     context_p next_context;
 
-    /* boolean value - should the contents of this context be output? */
-    char      output_contents;
+    /* to optimize adding loop iterations, this is a pointer to the last
+       iteration of this loop */
+    context_p last_context;
 
-    /* boolean value - is this context anonymous? */
-    char      anonymous;
+    /* flags can be CTX_FLAG_* */
+    unsigned char flags;
 };
 
 #ifdef __cplusplus

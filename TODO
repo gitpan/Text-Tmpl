@@ -1,19 +1,13 @@
 Stuff that may make it into future versions (patches welcome!)
+ . Add debugging output to stderr from parser if ctx_is_debug()
+ . Make the Perl destructor work as an implicit destructor, rather than forcing
+   the user to call it
+ . Add thorough documentation of the C++ class
  . Make subclassing affect the template objects created in perl_tags.c
- . Add a method for fetching a specific iteration (by number) of a named loop?
- . Improve the performance of loops with lots of iterations by keeping a
-   pointer to the last iteration in the loop
- . Abstract the linked lists used in varlist, nclist, tagplist, staglist
- . Add a C++ wrapping layer
- . Add remove_simple and remove_pair functions, to support deleting tags?
+ . Add a method for fetching a specific iteration (by number) of a named loop
+ . Add remove_simple and remove_pair functions, to support deleting tags
  . Export default tags via XS, so that they can be assigned via register_*
-   from Perl.
+   from Perl (and get rid of alias_*)
  . Port to win32?
- . Consistent, clean error reporting (something errno-like)
- . Make the parser more technically "correct" (i.e. single-pass, stack based
-   parsing)
  . Turn the linked lists used for contexts, varlists and nclists into some
    type of structure that is more efficient for large numbers of members
- . Create ::Context, ::Varlist, and ::Nclist sub-packages
- . Make sure that all C structures are completely opaque
- . Make sure that all C functions have perl wrappers

@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <context.h>
 
+#include "ppport.h"
+
 #include "perl_tags.h"
 
 
@@ -98,9 +100,9 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     {
         char *t = POPp;
 
-        *output = (char *)calloc(1, strlen(t) + 1);
+        *output = (char *)malloc(strlen(t) + 1);
         strncpy(*output, t, strlen(t));
-        (*output)[strlen(t) + 1] = '\0';
+        (*output)[strlen(t)] = '\0';
     }
     else
     {

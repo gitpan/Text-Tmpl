@@ -7,7 +7,7 @@ use Text::Tmpl;
 my($return, $okay, $loop_number, $subcontext);
 my $context = new Text::Tmpl;
 
-$return = $context->set_values({ ( 1 .. 10000 ) });
+$return = $context->set_values({ ( 1 .. 5000 ) });
 if (! $return) {
     print "not ok 1\n";
 } else {
@@ -15,7 +15,7 @@ if (! $return) {
 }
 
 $okay = 1;
-foreach (1 .. 1000) {
+foreach (1 .. 5000) {
     $subcontext = $context->loop_iteration( 'loop1' );
     if (! defined($subcontext)) {
         $okay = 0;

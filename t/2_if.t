@@ -29,8 +29,9 @@ if (! defined $comp_fh) {
 $comp_fh->close;
 
 $context->set_strip(0);
-$context->set_value('true',  Text::Tmpl::TEMPLATE_TRUE);
-$context->set_value('false', Text::Tmpl::TEMPLATE_FALSE);
+$context->set_value('true',   Text::Tmpl::TEMPLATE_TRUE);
+$context->set_value('false',  Text::Tmpl::TEMPLATE_FALSE);
+$context->set_value('string', 'foobarbaz');
 
 $output = $context->parse_file(TEMPLATE);
 

@@ -1,7 +1,7 @@
 use strict;
 use vars qw($loaded);
 
-BEGIN { $^W = 1; $| = 1; print "1..30\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..32\n"; }
 
 use Text::Tmpl;
 
@@ -78,19 +78,11 @@ if (! $return) {
     print "ok 10\n";
 }
 
-$return = $context->set_debug(1);
-if (! $return) {
-    print "not ok 11\n";
-} else {
-    print "ok 11\n";
-}
+$context->set_debug(1);
+print "ok 11\n";
 
-$return = $context->set_strip(1);
-if (! $return) {
-    print "not ok 12\n";
-} else {
-    print "ok 12\n";
-}
+$context->set_strip(1);
+print "ok 12\n";
 
 $return = $context->set_dir('/');
 if (! $return) {
@@ -121,19 +113,11 @@ if (! defined $subcontext) {
     print "ok 16\n";
 }
 
-$return = Text::Tmpl::set_debug($context, 1);
-if (! $return) {
-    print "not ok 17\n";
-} else {
-    print "ok 17\n";
-}
+Text::Tmpl::set_debug($context, 1);
+print "ok 17\n";
 
-$return = Text::Tmpl::set_strip($context, 1);
-if (! $return) {
-    print "not ok 18\n";
-} else {
-    print "ok 18\n";
-}
+Text::Tmpl::set_strip($context, 1);
+print "ok 18\n";
 
 $return = Text::Tmpl::set_dir($context, '/');
 if (! $return) {
@@ -210,5 +194,19 @@ if (! $return) {
     print "ok 29\n";
 }
 
+$return = Text::Tmpl::errno();
+if (! defined $return) {
+    print "not ok 30\n";
+} else {
+    print "ok 30\n";
+}
+
+$return = Text::Tmpl::strerror();
+if (! $return) {
+    print "not ok 31\n";
+} else {
+    print "ok 31\n";
+}
+
 $context->destroy();
-print "ok 30\n";
+print "ok 32\n";

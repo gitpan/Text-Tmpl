@@ -72,7 +72,8 @@ and it will be parsed.
 
 =item B<echo>
 
-The echo tag is replaced by the string value of its first argument.
+The echo tag is replaced by the concatenated string values of each of its
+arguments.
 
 =item B<include>
 

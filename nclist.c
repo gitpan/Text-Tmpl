@@ -11,10 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <nclist.h>
-#include <context.h>
-
-
+#include <template.h>
 
 /* ====================================================================
  * NAME:          nclist_init
@@ -32,9 +29,10 @@ nclist_init(void)
 {
     nclist_p named_context_list;
 
-    named_context_list = (nclist_p)calloc(1, sizeof(nclist));
+    named_context_list = (nclist_p)malloc(sizeof(nclist));
     if (named_context_list == NULL)
     {
+        template_errno = TMPL_EMALLOC;
         return NULL;
     }
 
@@ -104,11 +102,6 @@ nclist_get_context(nclist_p named_context_list, char *name)
 {
     nclist_p current = named_context_list;
 
-    if (named_context_list == NULL)
-    {
-        return NULL;
-    }
-
     while (current != NULL)
     {
         if ((current->name != NULL) && (current->context != NULL)
@@ -118,6 +111,7 @@ nclist_get_context(nclist_p named_context_list, char *name)
         }
         current = current->next;
     }
+    template_errno = TMPL_ENOCTX;
     return NULL;
 }
 
@@ -138,14 +132,17 @@ int
 nclist_new_context(nclist_p *named_context_list, char *name)
 {
     nclist_p new = NULL;
+    int length;
      
     if (named_context_list == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
     if (name == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -162,9 +159,10 @@ nclist_new_context(nclist_p *named_context_list, char *name)
         return 0;
     }
 
-    new->name = (char *)malloc(strlen(name) + 1);
-    strncpy(new->name, name, strlen(name));
-    new->name[strlen(name)] = '\0';
+    length = strlen(name);
+    new->name = (char *)malloc(length + 1);
+    strncpy(new->name, name, length);
+    new->name[length] = '\0';
 
     new->next = *named_context_list;
 

@@ -53,11 +53,7 @@ $comp_fh->close;
 print "ok 1\n";
 
 $return = $context->set_strip(0);
-if (! $return) {
-    print "not ok 2\n";
-} else {
-    print "ok 2\n";
-}
+print "ok 2\n";
 
 $return = $context->test_sub;
 if (! $return) {

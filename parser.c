@@ -45,10 +45,9 @@ parser(context_p ctx, int looping, char *input, char **output)
     context_p  current     = ctx;
     int        output_size = 1024;
     int        i;
-    int        strip       = string_truth(context_get_value(ctx,
-                                                            "INTERNAL_strip"));
-    char *     otag        = context_get_value(ctx, "INTERNAL_otag");
-    char *     ctag        = context_get_value(ctx, "INTERNAL_ctag");
+    int        strip       = ctx_is_strip(ctx);
+    char *     otag        = context_get_value(ctx, TMPL_VARNAME_OTAG);
+    char *     ctag        = context_get_value(ctx, TMPL_VARNAME_CTAG);
     context_p  rootctx     = ctx;
     staglist_p simple_tags = NULL;
     tagplist_p tag_pairs   = NULL;
@@ -63,15 +62,18 @@ parser(context_p ctx, int looping, char *input, char **output)
     *output = (char *)calloc(1, output_size);
     if (*output == NULL)
     {
+        template_errno = TMPL_EMALLOC;
         return 0;
     }
 
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
     if (input == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -86,7 +88,7 @@ parser(context_p ctx, int looping, char *input, char **output)
         int  size;
 
         /* let's avoid doing any work as long as we can */
-        if (! current->output_contents)
+        if (! ctx_is_output(current))
         {
             if (looping)
             {
@@ -107,6 +109,7 @@ parser(context_p ctx, int looping, char *input, char **output)
             if (tptr == NULL)
             {
                 /* The tag opened but never closed.  Bummer! */
+                template_errno = TMPL_EPARSE;
                 return 0;
             }
             /* move the position marker up to the tag's end */
@@ -159,6 +162,7 @@ parser(context_p ctx, int looping, char *input, char **output)
                     if (tptr == NULL)
                     {
                         /* The tag opened but never closed.  Bummer! */
+                        template_errno = TMPL_EPARSE;
                         return 0;
                     }
                     /* move the position marker up to the tag's end */
@@ -215,7 +219,7 @@ parser(context_p ctx, int looping, char *input, char **output)
                                           strlen(parsed_region), &output_size);
                             free(parsed_region);
 
-                            if (newcontext->anonymous)
+                            if (ctx_is_anonymous(newcontext))
                             {
                                 context_destroy(newcontext);
                             }
@@ -282,7 +286,7 @@ parse_tag(context_p ctx, char *tag, char **tagname, int *argc, char ***argv)
     char **targv;
 
     *argc = 0;
-    targv = (char **)calloc(*argc + 1, sizeof(char **));
+    targv = (char **)malloc((*argc + 1) * sizeof(char **));
 
     tag += strspn(tag, "\011\012\013\014\015\040");
     length = strcspn(tag, "\011\012\013\014\015\040");
@@ -418,8 +422,9 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
                         *outarg = t;
                     }
 
-                    strncat(&((*outarg)[index]), varvalue, strlen(varvalue));
-                    index += strlen(varvalue) - 1;
+                    length = strlen(varvalue);
+                    strncat(&((*outarg)[index]), varvalue, length);
+                    index += length - 1;
                     --p;
                 } else
                 {
@@ -451,7 +456,7 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
             {
                 cursize = cursize * 2;
             }
-            t = (char *)calloc(1, cursize);
+            t = (char *)malloc(cursize);
             strncpy(t, *outarg, index);
 
             free(*outarg);
@@ -486,7 +491,7 @@ append_output(char **output, char *append, int append_size, int *current_size)
         {
             *current_size = (*current_size) * 2;
         }
-        temp = (char *)calloc(1, *current_size);
+        temp = (char *)malloc(*current_size);
         strncpy(temp, *output, strlen(*output));
 
         free(*output);

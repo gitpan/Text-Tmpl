@@ -10,11 +10,7 @@
 
 #include <stdlib.h>
 
-#include <context.h>
-#include <varlist.h>
-#include <nclist.h>
-
-
+#include <template.h>
 
 /* ====================================================================
  * NAME:          context_init
@@ -32,9 +28,10 @@ context_init(void)
 {
     context_p ctx;
 
-    ctx = (context_p)calloc(1, sizeof(context));
+    ctx = (context_p)malloc(sizeof(context));
     if (ctx == NULL)
     {
+        template_errno = TMPL_EMALLOC;
         return NULL;
     }
 
@@ -57,8 +54,8 @@ context_init(void)
     ctx->tag_pairs       = NULL;
     ctx->parent_context  = NULL;
     ctx->next_context    = NULL;
-    ctx->output_contents = 1;
-    ctx->anonymous       = 0;
+    ctx->last_context    = ctx;
+    ctx->flags           = CTX_FLAG_OUTPUT;
 
     return(ctx);
 }
@@ -108,6 +105,7 @@ context_destroy(context_p ctx)
     ctx->named_child_contexts = NULL;
     ctx->variables            = NULL;
     ctx->next_context         = NULL;
+    ctx->last_context         = NULL;
     ctx->parent_context       = NULL;
     ctx->simple_tags          = NULL;
     ctx->tag_pairs            = NULL;
@@ -137,6 +135,7 @@ context_get_value(context_p ctx, char *name)
 
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return NULL;
     }
 
@@ -147,6 +146,7 @@ context_get_value(context_p ctx, char *name)
     }
     if (ctx->parent_context == NULL)
     {
+        template_errno = TMPL_ENOVALUE;
         return NULL;
     }
     return(context_get_value(ctx->parent_context, name));
@@ -169,6 +169,7 @@ context_set_value(context_p ctx, char *name, char *value)
 {
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
     return(varlist_set_value(&(ctx->variables), name, value));
@@ -195,6 +196,7 @@ context_get_anonymous_child(context_p ctx)
 
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return NULL;
     }
 
@@ -205,7 +207,8 @@ context_get_anonymous_child(context_p ctx)
     }
 
     anonymous_ctx->parent_context = ctx;
-    anonymous_ctx->anonymous      = 1;
+    anonymous_ctx->flags          = ctx->flags;
+    ctx_set_anonymous(anonymous_ctx);
 
     return(anonymous_ctx);
 }
@@ -230,6 +233,7 @@ context_get_named_child(context_p ctx, char *name)
 
     if (ctx == NULL)
     { 
+        template_errno = TMPL_ENULLARG;
         return NULL;
     }
 
@@ -240,6 +244,7 @@ context_get_named_child(context_p ctx, char *name)
     }
     if (ctx->parent_context == NULL)
     {
+        template_errno = TMPL_ENOCTX;
         return NULL;
     }
     return(context_get_named_child(ctx->parent_context, name));
@@ -263,6 +268,7 @@ context_set_named_child(context_p ctx, char *name)
     context_p named_ctx;
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -278,6 +284,8 @@ context_set_named_child(context_p ctx, char *name)
     }
 
     named_ctx->parent_context = ctx;
+    named_ctx->flags          = ctx->flags;
+
     return 1;
 }
 
@@ -298,10 +306,16 @@ context_p
 context_add_peer(context_p ctx)
 {
     context_p peer_ctx;
-    context_p current = ctx;
 
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
+        return NULL;
+    }
+
+    if (ctx->last_context == NULL)
+    {
+        template_errno = TMPL_ESCREWY;
         return NULL;
     }
 
@@ -311,12 +325,10 @@ context_add_peer(context_p ctx)
         return NULL;
     }
     peer_ctx->parent_context = ctx->parent_context;
+    peer_ctx->flags          = ctx->flags;
 
-    while (current->next_context !=  NULL)
-    {
-        current = current->next_context;
-    }
-    current->next_context = peer_ctx;
+    ctx->last_context->next_context = peer_ctx;
+    ctx->last_context               = peer_ctx;
 
     return(peer_ctx);
 }
@@ -339,6 +351,14 @@ context_output_contents(context_p ctx, char output_contents)
     {
         return;
     }
-    ctx->output_contents = output_contents;
+
+    if (output_contents)
+    {
+        ctx_set_output(ctx);
+    }
+    else
+    {
+        ctx_unset_output(ctx);
+    }
     return;
 }

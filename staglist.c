@@ -11,9 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <context.h>
-#include <staglist.h>
-
+#include <template.h>
 
 /* ====================================================================
  * NAME:          staglist_init
@@ -31,9 +29,10 @@ staglist_init(void)
 {
     staglist_p simple_tag_list;
 
-    simple_tag_list = (staglist_p)calloc(1, sizeof(staglist));
+    simple_tag_list = (staglist_p)malloc(sizeof(staglist));
     if (simple_tag_list == NULL)
     {
+        template_errno = TMPL_EMALLOC;
         return NULL;
     }
 
@@ -95,15 +94,10 @@ staglist_alias(staglist_p *simple_tag_list, char *old_name, char *new_name)
 {
     staglist_p current  = *simple_tag_list;
 
-    /* Make sure the simple tag list isn't NULL */
-    if (*simple_tag_list == NULL)
-    {
-        return 0;
-    }
-
     /* Make sure that neither name is NULL */
     if ((old_name == NULL) || (new_name == NULL))
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -118,6 +112,7 @@ staglist_alias(staglist_p *simple_tag_list, char *old_name, char *new_name)
         current = current->next;
     }
 
+    template_errno = TMPL_ENOSTAG;
     return 0;
 }
 
@@ -137,22 +132,26 @@ staglist_register(staglist_p *simple_tag_list, char *name,
                   void (*function)(context_p, char **, int, char**))
 {
     staglist_p new = NULL;
+    int length;
 
     /* Make sure the function isn't NULL */
     if (function == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
     /* Make sure the name isn't NULL */
     if (name == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
     /* Make sure the pointer passed in wasn't NULL */
     if (*simple_tag_list == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -164,9 +163,10 @@ staglist_register(staglist_p *simple_tag_list, char *name,
 
     new->function = function;
 
-    new->name = (char *)malloc(strlen(name) + 1);
-    strncpy(new->name, name, strlen(name));
-    new->name[strlen(name)] = '\0';
+    length = strlen(name);
+    new->name = (char *)malloc(length + 1);
+    strncpy(new->name, name, length);
+    new->name[length] = '\0';
 
     new->next = *simple_tag_list;
 
@@ -193,11 +193,6 @@ staglist_exists(staglist_p simple_tag_list, char *name)
 {
     staglist_p current = simple_tag_list;
 
-    if (simple_tag_list == NULL)
-    {
-        return 0;
-    }
-
     while (current != NULL)
     {
         if ((current->name != NULL) && (current->function != NULL)
@@ -207,6 +202,8 @@ staglist_exists(staglist_p simple_tag_list, char *name)
         }
         current = current->next;
     }
+
+    template_errno = TMPL_ENOSTAG;
     return 0;
 }
 
@@ -228,11 +225,6 @@ staglist_exec(staglist_p simple_tag_list, char *name, context_p ctx,
 {
     staglist_p current = simple_tag_list;
 
-    if (simple_tag_list == NULL)
-    {
-        return 0;
-    }
-
     while (current != NULL)
     {
         if ((current->name != NULL) && (current->function != NULL)
@@ -243,5 +235,7 @@ staglist_exec(staglist_p simple_tag_list, char *name, context_p ctx,
         }
         current = current->next;
     }
+
+    template_errno = TMPL_ENOSTAG;
     return 0;
 }

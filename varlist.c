@@ -32,9 +32,10 @@ varlist_init(void)
 {
     varlist_p variable_list;
 
-    variable_list = (varlist_p)calloc(1, sizeof(varlist));
+    variable_list = (varlist_p)malloc(sizeof(varlist));
     if (variable_list == NULL)
     {
+        template_errno = TMPL_EMALLOC;
         return NULL;
     }
 
@@ -112,6 +113,7 @@ varlist_get_value(varlist_p variable_list, char *name)
         }
         current = current->next;
     }
+    template_errno = TMPL_ENOVALUE;
     return NULL;
 }
 
@@ -132,16 +134,19 @@ int
 varlist_set_value(varlist_p *variable_list, char *name, char *value)
 {
     varlist_p new = NULL;
+    int length;
 
     /* Make sure that the pointer passed in wasn't NULL */
     if (variable_list == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
     /* Make sure that the name and value aren't NULL */
     if ((name == NULL) || (value == NULL))
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -151,13 +156,15 @@ varlist_set_value(varlist_p *variable_list, char *name, char *value)
         return 0;
     }
 
-    new->name = (char *)malloc(strlen(name) + 1);
-    strncpy(new->name, name, strlen(name));
-    new->name[strlen(name)] = '\0';
+    length = strlen(name);
+    new->name = (char *)malloc(length + 1);
+    strncpy(new->name, name, length);
+    new->name[length] = '\0';
 
-    new->value = (char *)malloc(strlen(value) + 1);
-    strncpy(new->value, value, strlen(value));
-    new->value[strlen(value)] = '\0';
+    length = strlen(value);
+    new->value = (char *)malloc(length + 1);
+    strncpy(new->value, value, length);
+    new->value[length] = '\0';
 
     new->next = *variable_list;
 

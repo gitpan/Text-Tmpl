@@ -22,8 +22,26 @@
 #define MAXPATHLEN 1024
 #endif /* MAXPATHLEN */
 
-
 int  parser(context_p ctx, int looping, char *input, char **output);
+
+int template_errno = TMPL_ENONE;
+
+char *template_errno_strings[] =
+{
+    "no error",
+    "malloc() failed",
+    "got NULL argument where pointer was expected",
+    "got bogus argument value",
+    "no such variable",
+    "no such named context",
+    "no such simple tag",
+    "no such tag pair",
+    "file not found",
+    "unable to open file",
+    "unable to parse",
+    "this can't happen!",
+    NULL
+};
 
 
 /* ====================================================================
@@ -52,12 +70,14 @@ template_init(void)
     ctx->simple_tags = staglist_init();
     if (ctx->simple_tags == NULL)
     {
+        context_destroy(ctx);
         return NULL;
     }
 
     ctx->tag_pairs = tagplist_init();
     if (ctx->tag_pairs == NULL)
     {
+        context_destroy(ctx);
         return NULL;
     }
 
@@ -73,11 +93,12 @@ template_init(void)
     cwd = (char *)malloc(MAXPATHLEN);
     getcwd(cwd, MAXPATHLEN);
 
-    template_set_value(ctx, "INTERNAL_otag",  "<!--#");
-    template_set_value(ctx, "INTERNAL_ctag",  "-->");
-    template_set_value(ctx, "INTERNAL_debug", "0");
-    template_set_value(ctx, "INTERNAL_strip", "1");
-    template_set_value(ctx, "INTERNAL_dir",   cwd);
+    template_set_value(ctx, TMPL_VARNAME_OTAG,  "<!--#");
+    template_set_value(ctx, TMPL_VARNAME_CTAG,  "-->");
+    template_set_value(ctx, TMPL_VARNAME_DIR,   cwd);
+
+    template_set_debug(ctx, 0);
+    template_set_strip(ctx, 1);
 
     free(cwd);
 
@@ -96,27 +117,22 @@ template_init(void)
  *               
  * BUGS:          Hopefully none.
  * ==================================================================== */
-int
-template_set_debug(context_p ctx, int debug_level)
+void
+template_set_debug(context_p ctx, int debug)
 {
     if (ctx == NULL)
     {
-        return(0);
+        return;
     }
-
-    if (debug_level == TEMPLATE_DEBUG_NONE)
+    if (debug)
     {
-        return(template_set_value(ctx, "INTERNAL_debug", "0"));
+        ctx_set_debug(ctx);
     }
-    else if (debug_level == TEMPLATE_DEBUG_SOME)
+    else
     {
-        return(template_set_value(ctx, "INTERNAL_debug", "1"));
+        ctx_unset_debug(ctx);
     }
-    else if (debug_level == TEMPLATE_DEBUG_LOTS)
-    {
-        return(template_set_value(ctx, "INTERNAL_debug", "2"));
-    }
-    return(0);
+    return;
 }
 
 
@@ -133,23 +149,22 @@ template_set_debug(context_p ctx, int debug_level)
  *               
  * BUGS:          Hopefully none.
  * ==================================================================== */
-int
+void
 template_set_strip(context_p ctx, int strip)
 {
     if (ctx == NULL)
     {
-        return(0);
+        return;
     }
-
     if (strip)
     {
-        return(template_set_value(ctx, "INTERNAL_strip", "1"));
+        ctx_set_strip(ctx);
     }
     else
     {
-        return(template_set_value(ctx, "INTERNAL_strip", "0"));
+        ctx_unset_strip(ctx);
     }
-    return(0);
+    return;
 }
 
 /* ====================================================================
@@ -165,17 +180,13 @@ template_set_strip(context_p ctx, int strip)
 int
 template_set_dir(context_p ctx, char *directory)
 {
-    if (ctx == NULL)
-    {
-        return(0);
-    }
-
     if (directory == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return(0);
     }
 
-    return(template_set_value(ctx, "INTERNAL_dir", directory));
+    return(template_set_value(ctx, TMPL_VARNAME_DIR, directory));
 }
 
 
@@ -195,16 +206,12 @@ template_set_delimiters(context_p ctx, char *opentag, char *closetag)
 {
     if ((opentag == NULL) || (closetag == NULL))
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
-    if (ctx == NULL)
-    {
-        return 0;
-    }
-
-    if ((! template_set_value(ctx, "INTERNAL_otag", opentag))
-     || (! template_set_value(ctx, "INTERNAL_ctag", closetag)))
+    if ((! template_set_value(ctx, TMPL_VARNAME_OTAG, opentag))
+     || (! template_set_value(ctx, TMPL_VARNAME_CTAG, closetag)))
     {
         return 0;
     }
@@ -231,6 +238,7 @@ template_alias_simple(context_p ctx, char *old_name, char *new_name)
 
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -261,6 +269,7 @@ template_register_simple(context_p ctx, char *name,
 
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -291,6 +300,7 @@ template_alias_pair(context_p ctx, char *old_open_name, char *old_close_name,
 
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -323,6 +333,7 @@ template_register_pair(context_p ctx, char named_context, char *open_name,
 
     if (ctx == NULL)
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
@@ -374,16 +385,17 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
     char        *real_filename;
     int         retval;
 
-    *output = NULL;
-
     if ((template_filename == NULL) || (output == NULL))
     {
+        template_errno = TMPL_ENULLARG;
         return 0;
     }
 
+    *output = NULL;
+
     if (stat(template_filename, &finfo) != 0)
     {
-        char *dir = context_get_value(ctx, "INTERNAL_dir");
+        char *dir = context_get_value(ctx, TMPL_VARNAME_DIR);
         int size  = strlen(template_filename) + strlen(dir) + 2;
 
         real_filename = (char *)malloc(size);
@@ -399,6 +411,7 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
         if (stat(real_filename, &finfo) != 0)
         {
             free(real_filename);
+            template_errno = TMPL_ENOTFOUND;
             return 0;
         }
     }
@@ -411,6 +424,7 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
     if ((filehandle = fopen(real_filename, "r")) == NULL)
     {
         free(real_filename);
+        template_errno = TMPL_EFOPEN;
         return 0;
     }
 
@@ -419,6 +433,7 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
     {
         free(real_filename);
         fclose(filehandle);
+        template_errno = TMPL_EMALLOC;
         return 0;
     }
 
@@ -467,4 +482,23 @@ void
 template_destroy(context_p ctx)
 {
     context_destroy(ctx);
+}
+
+/* ====================================================================
+ * NAME:          template_strerror
+ *
+ * DESCRIPTION:   Returns a string describing the current error condition
+ *                (if any)
+ *
+ * RETURN VALUES: A string describing the current error condition.
+ *
+ * BUGS:          Hopefully none.
+ * ==================================================================== */
+char *
+template_strerror(void)
+{
+    if ((template_errno < TMPL_ERR_MIN) || (template_errno > TMPL_ERR_MAX)) {
+        template_errno = TMPL_ESCREWY;
+    }
+    return(template_errno_strings[template_errno]);
 }

@@ -141,7 +141,8 @@ tag_pair_comment(context_p ctx, int argc, char **argv)
 void
 simple_tag_echo(context_p ctx, char **output, int argc, char **argv)
 {
-    int size;
+    int total_size = 0;
+    int i;
 
     if (argc < 1)
     {
@@ -149,10 +150,26 @@ simple_tag_echo(context_p ctx, char **output, int argc, char **argv)
         return;
     }
 
-    size = strlen(argv[1]);
-    *output = (char *)malloc(size + 1);
-    strncpy(*output, argv[1], size);
-    (*output)[size] = '\0';
+    *output = NULL;
+    for (i = 1; i <= argc; i++) {
+        int size = strlen(argv[i]);
+        char *t = (char *)malloc(total_size + size + 1);
+
+        if (*output == NULL)
+        {
+            strncpy(t, argv[i], size);
+            t[size] = '\0';
+        }
+        else
+        {
+            snprintf(t, total_size + size, "%s%s", *output, argv[i]);
+            t[total_size + size] = '\0';
+            free(*output);
+        }
+
+        *output = t;
+        total_size += size + 1;
+    }
 
     return;
 }
@@ -183,7 +200,7 @@ simple_tag_include(context_p ctx, char **output, int argc, char **argv)
 
     if (stat(argv[1], &finfo) != 0)
     {
-        char *dir = context_get_value(ctx, "INTERNAL_dir");
+        char *dir = context_get_value(ctx, TMPL_VARNAME_DIR);
         int size  = strlen(argv[1]) + strlen(dir) + 2;
 
         filename = (char *)malloc(size);
@@ -249,11 +266,6 @@ template_loop_iteration(context_p ctx, char *loop_name)
 {
     context_p return_context;
 
-    if (ctx == NULL)
-    {
-        return NULL;
-    }
-
     return_context = context_get_named_child(ctx, loop_name);
     if (return_context == NULL)
     {
@@ -285,6 +297,16 @@ char string_truth(char *input)
     {              
         return 1;
     }           
+    else
+    {
+        while (*input)
+        {
+            if (*input++ != '0')
+            {
+                return 1;
+            }
+        }
+    }
     return 0;
 }
 
