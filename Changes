@@ -1,3 +1,5 @@
+0.29    - bugfix release
+        - fixed concatenation of multiple variables in an argument
 0.28    - bugfix release
         - fixed core when loop name expanded to null value
 0.27    - bugfix release

@@ -534,8 +534,9 @@ token_parsearg(context_p ctx, char *inarg, int size, char **outarg)
                 {
                     append_output(outarg, varvalue, strlen(varvalue),
                                   &cursize, &index);
-                    --p;
                 }
+                --p;
+                --i;
             }
         } else
         {

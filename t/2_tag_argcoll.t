@@ -32,6 +32,7 @@ $comp_fh->close;
 $context->set_strip(0);
 $context->set_value('var1', 'value1');
 $context->set_value('var2', 'value2');
+$context->set_value('var3', 'value3');
 
 $output = $context->parse_file(TEMPLATE);
 
