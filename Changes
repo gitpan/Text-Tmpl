@@ -1,3 +1,5 @@
+0.28    - bugfix release
+        - fixed core when loop name expanded to null value
 0.27    - bugfix release
         - fixed warnings when perl extension tags return undef
 0.26    - bugfix release

@@ -225,7 +225,7 @@ context_get_named_child(context_p ctx, char *name)
 {
     context_p result;
 
-    if (ctx == NULL)
+    if ((ctx == NULL) || (name == NULL))
     { 
         template_errno = TMPL_ENULLARG;
         return NULL;
