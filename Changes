@@ -1,3 +1,7 @@
+0.19	- performance release
+	- modified append_output() in parser.c to never call strlen(), which
+	  is a *huge* performance win for large templates
+	- removed unnecessary atoi() call in default_tags.c (ak@dasburo.de)
 0.18	- bugfix release
 	- added additional tests for large input problems
 	- fixed a bug (introduced in 0.17) with variables larger than 1024

@@ -20,7 +20,7 @@ void parse_tag(context_p ctx, char *tag, char **tagname,
                int *argc, char ***argv);
 void parse_arg(context_p ctx, char *inarg, int size, char **outarg);
 void append_output(char **output, char *append, int append_length,
-                   int *current_size);
+                   int *current_size, int *current_length);
 
 
 /* ====================================================================
@@ -42,8 +42,9 @@ void append_output(char **output, char *append, int append_length,
 int
 parser(context_p ctx, int looping, char *input, char **output)
 {
-    context_p  current     = ctx;
-    int        output_size = 1024;
+    context_p  current       = ctx;
+    int        output_size   = 1024;
+    int        output_length = 0;
     int        i;
     int        strip       = ctx_is_strip(ctx);
     char *     otag        = context_get_value(ctx, TMPL_VARNAME_OTAG);
@@ -102,7 +103,8 @@ parser(context_p ctx, int looping, char *input, char **output)
         {
             /* copy the stuff before the tag into the output buffer */
             append_output(output, position,
-                          (strlen(position) - strlen(tagstart)), &output_size);
+                          (strlen(position) - strlen(tagstart)), &output_size,
+                          &output_length);
 
             /* now find the end of the tag */
             tptr = strstr(tagstart, ctag);
@@ -141,7 +143,7 @@ parser(context_p ctx, int looping, char *input, char **output)
                     parser(current, 0, result, &parsed_result);
 
                     append_output(output, parsed_result, strlen(parsed_result),
-                                  &output_size);
+                                  &output_size, &output_length);
                     free(result);
                     free(parsed_result);
                 }
@@ -216,7 +218,8 @@ parser(context_p ctx, int looping, char *input, char **output)
 
                             parser(newcontext, 1, region, &parsed_region);
                             append_output(output, parsed_region,
-                                          strlen(parsed_region), &output_size);
+                                          strlen(parsed_region), &output_size,
+                                          &output_length);
                             free(parsed_region);
 
                             if (ctx_is_anonymous(newcontext))
@@ -246,7 +249,8 @@ parser(context_p ctx, int looping, char *input, char **output)
             free(open_tag);
         }
 
-        append_output(output, position, strlen(position), &output_size);
+        append_output(output, position, strlen(position), &output_size,
+                      &output_length);
 
         /* done this iteration - move to the next */
         if (looping)
@@ -478,28 +482,30 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
  * BUGS:          Hopefully none.
  * ==================================================================== */
 void
-append_output(char **output, char *append, int append_size, int *current_size)
+append_output(char **output, char *append, int append_size, int *current_size,
+              int *current_length)
 {
-    int length = strlen(*output);
-    while ((length + append_size + 1) > *current_size) {
+    if (((*current_length) + append_size + 1) > *current_size) {
         char *temp;
 
-        if ((length + append_size + 1) > ((*current_size) * 2))
+        if (((*current_length) + append_size + 1) > ((*current_size) * 2))
         {
-            *current_size = (length + append_size + 1);
+            *current_size = (*current_length) + append_size + 1;
         } else
         {
             *current_size = (*current_size) * 2;
         }
         temp = (char *)malloc(*current_size);
 
-        strncpy(temp, *output, length);
-        temp[length] = '\0';
+        strncpy(temp, *output, *current_length);
+        temp[*current_length] = '\0';
 
         free(*output);
         *output = temp;
     }
 
-    strncat(*output, append, append_size);
-    (*output)[length + append_size] = '\0';
+    strncpy((*output) + (*current_length), append, append_size);
+    (*output)[(*current_length) + append_size] = '\0';
+
+    (*current_length) += append_size;
 }
