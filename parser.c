@@ -201,6 +201,10 @@ parser(context_p ctx, int looping, token_group_p tokens, char **output)
                         }
                     }
                 }
+                if (depth != 0) {
+                    template_errno = TMPL_EPARSE;
+                    return -1;
+                }
             }
         }
 

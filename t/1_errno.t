@@ -1,7 +1,7 @@
 use strict;
 use Test;
 
-BEGIN { plan tests => 5 }
+BEGIN { plan tests => 6 }
 
 use Text::Tmpl;
 
@@ -25,6 +25,11 @@ $errstr = Text::Tmpl::strerror();
 ok((! $return) && ($errno == 5) && ($errstr eq 'no such named context'));
 
 $return = $context->parse_string('<!--#loop "unbalanced"');
+$errno  = Text::Tmpl::errno();
+$errstr = Text::Tmpl::strerror();
+ok(($errno == 10) && ($errstr eq 'unable to parse'));
+
+$return = $context->parse_string('Hello <!--#if "true"-->');
 $errno  = Text::Tmpl::errno();
 $errstr = Text::Tmpl::strerror();
 ok(($errno == 10) && ($errstr eq 'unable to parse'));

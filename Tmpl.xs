@@ -10,7 +10,6 @@
 MODULE = Text::Tmpl PACKAGE = Text::Tmpl PREFIX = template_
 PROTOTYPES: ENABLE
 
-
 context_p
 template_init()
 	PREINIT:
@@ -144,7 +143,7 @@ template_parse_file(ctx, template_filename)
                 if (output != NULL)
 		{
                     RETVAL = newSVpv(output, strlen(output));
-                    free(output);
+                    template_free_output(output);
                 }
 		else
 		{
@@ -172,7 +171,7 @@ template_parse_string(ctx, template)
                 if (output != NULL)
 		{
                     RETVAL = newSVpv(output, strlen(output));
-                    free(output);
+                    template_free_output(output);
                 }
 		else
 		{

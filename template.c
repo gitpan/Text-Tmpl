@@ -526,3 +526,20 @@ template_strerror(void)
     }
     return(template_errno_strings[template_errno]);
 }
+
+
+
+/* ====================================================================
+ * NAME:          template_free_output
+ *
+ * DESCRIPTION:   Frees a string.
+ *
+ * RETURN VALUES: None.
+ *
+ * BUGS:          The fact that it exists at all. DO NOT USE THIS FUNCTION!
+ * ==================================================================== */
+void
+template_free_output(char *output)
+{
+    free(output);
+}

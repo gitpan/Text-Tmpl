@@ -1,6 +1,10 @@
+0.25	- bugfix release
+	- fixed hanging when a tag pair isn't closed (jon@binadopta.com)
+	- fixed Win32 crash in template_parse_(file|string) (dan@unpossible.com)
+	- updated contact information
 0.24	- port release
 	- port to Win32 (ak@dasburo.de)
-	- switched tests around to use Test.pm (neil@pootpoot.com)
+	- switched tests around to use Test.pm (neil@kenamea.com)
 	- added C++ support for fetch_loop_iteration(), remove_simple() and
 	  remove_pair()
 	- added documentation for the fetch_loop_iteration() function

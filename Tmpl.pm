@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA $AUTOLOAD @EXPORT_OK);
 use constant TEMPLATE_TRUE  => '1';
 use constant TEMPLATE_FALSE => '0';
 
-$VERSION = '0.24';
+$VERSION = '0.25';
 
 use Exporter;
 
@@ -290,7 +290,7 @@ Hopefully none.
 
 =head1 AUTHOR
 
-J. David Lowe, dlowe@pootpoot.com
+J. David Lowe, dlowe@saturn5.com
 
 =head1 SEE ALSO
 

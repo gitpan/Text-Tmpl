@@ -72,6 +72,7 @@ int       template_parse_string(context_p ctx, char *tmpl, char **output);
 int       template_parse_file(context_p ctx, char *template_filename,
                               char **output);
 char *    template_strerror(void);
+void      template_free_output(char *output); /* XX: do not use! */
 
 #ifdef __cplusplus
 }

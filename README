@@ -30,7 +30,7 @@ Prerequisites
 =============
 
 A C compiler and Perl 5.  Unix (and derivative) and Win32 systems are supported
-as of 0.24, but Win32 is still somewhat experimental.
+as of 0.24.
 
 
 Building
@@ -65,14 +65,11 @@ Additional Information
 If you're using this module, let me know!  It's always fascinating to hear
 what uses people have found for it.
 
-There is a web page for Text::Tmpl at http://pootpoot.com/~dlowe/Text-Tmpl/
-The latest version can always be found there.
-
 There's a lot of example perl code in the t/ (test scripts) directory in
 this distribution.  There's also a little bit of example C and C++ code in
 the examples/ directory of the distribution.
 
-You can contact me directly at dlowe@pootpoot.com.  I'm happy to answer any
+You can contact me directly at dlowe@saturn5.com.  I'm happy to answer any
 questions you might have.
 
 If there's enough demand, I will create a mailing list for discussion/support.
