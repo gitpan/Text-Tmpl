@@ -1,10 +1,7 @@
-^Namespace dump:
+Namespace dump:
 var2 => value2
 var1 => value1
-INTERNAL_dir => .*
-INTERNAL_ctag => -->
-INTERNAL_otag => 
 loop1: 
 iter => 1
 loop1: 
-iter => 2$
+iter => 2

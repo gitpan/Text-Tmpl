@@ -22,9 +22,9 @@
 #define MAXPATHLEN 1024
 #endif /* MAXPATHLEN */
 
-int  parser(context_p ctx, int looping, char *input, char **output);
-
 int template_errno = TMPL_ENONE;
+
+int parser(context_p ctx, int looping, token_group_p tokens, char **output);
 
 char *template_errno_strings[] =
 {
@@ -40,6 +40,7 @@ char *template_errno_strings[] =
     "unable to open file",
     "unable to parse",
     "this can't happen!",
+    "no such token",
     NULL
 };
 
@@ -59,7 +60,6 @@ char *template_errno_strings[] =
 context_p
 template_init(void)
 {
-    char *cwd;
     context_p ctx = context_init();
 
     if (ctx == NULL)
@@ -90,17 +90,17 @@ template_init(void)
     template_register_pair(ctx, 0, "ifn",     "endifn",     tag_pair_ifn);
     template_register_pair(ctx, 0, "debug",   "enddebug",   tag_pair_debug);
 
-    cwd = (char *)malloc(MAXPATHLEN);
-    getcwd(cwd, MAXPATHLEN);
+    ctx->buffer  = (char *)malloc(MAXPATHLEN);
+    ctx->bufsize = MAXPATHLEN;
+    ctx->buffer = (char *)malloc(MAXPATHLEN);
+    getcwd(ctx->buffer, MAXPATHLEN);
 
     template_set_value(ctx, TMPL_VARNAME_OTAG,  "<!--#");
     template_set_value(ctx, TMPL_VARNAME_CTAG,  "-->");
-    template_set_value(ctx, TMPL_VARNAME_DIR,   cwd);
+    template_set_value(ctx, TMPL_VARNAME_DIR,   ctx->buffer);
 
     template_set_debug(ctx, 0);
     template_set_strip(ctx, 1);
-
-    free(cwd);
 
     return(ctx);
 }
@@ -167,28 +167,6 @@ template_set_strip(context_p ctx, int strip)
     return;
 }
 
-/* ====================================================================
- * NAME:          template_set_dir
- *
- * DESCRIPTION:   Set the directory in which templates will be sought
- *                by template_parse_file() and the include tag.
- *
- * RETURN VALUES: 0 if there's a problem; 1 on success.
- *                                                    
- * BUGS:          Hopefully none.
- * ==================================================================== */
-int
-template_set_dir(context_p ctx, char *directory)
-{
-    if (directory == NULL)
-    {
-        template_errno = TMPL_ENULLARG;
-        return(0);
-    }
-
-    return(template_set_value(ctx, TMPL_VARNAME_DIR, directory));
-}
-
 
 
 /* ====================================================================
@@ -234,7 +212,7 @@ template_set_delimiters(context_p ctx, char *opentag, char *closetag)
 int
 template_alias_simple(context_p ctx, char *old_name, char *new_name)
 {
-    context_p current = ctx;
+    context_p current;
 
     if (ctx == NULL)
     {
@@ -242,10 +220,7 @@ template_alias_simple(context_p ctx, char *old_name, char *new_name)
         return 0;
     }
 
-    while (current->parent_context != NULL)
-    {
-        current = current->parent_context;
-    }
+    current = context_root(ctx);
     return(staglist_alias(&(current->simple_tags), old_name, new_name));
 }
 
@@ -265,7 +240,7 @@ int
 template_register_simple(context_p ctx, char *name,
                          void (*function)(context_p, char **, int, char**))
 {
-    context_p current = ctx;
+    context_p current;
 
     if (ctx == NULL)
     {
@@ -273,10 +248,7 @@ template_register_simple(context_p ctx, char *name,
         return 0;
     }
 
-    while (current->parent_context != NULL)
-    {
-        current = current->parent_context;
-    }
+    current = context_root(ctx);
     return(staglist_register(&(current->simple_tags), name, function));
 }
 
@@ -296,7 +268,7 @@ int
 template_alias_pair(context_p ctx, char *old_open_name, char *old_close_name,
                     char *new_open_name, char *new_close_name)
 {
-    context_p current = ctx;
+    context_p current;
 
     if (ctx == NULL)
     {
@@ -304,10 +276,7 @@ template_alias_pair(context_p ctx, char *old_open_name, char *old_close_name,
         return 0;
     }
 
-    while (current->parent_context != NULL)
-    {
-        current = current->parent_context;
-    }
+    current = context_root(ctx);
     return(tagplist_alias(&(current->tag_pairs), old_open_name, old_close_name,
                           new_open_name, new_close_name));
 }
@@ -329,7 +298,7 @@ template_register_pair(context_p ctx, char named_context, char *open_name,
                        char *close_name,
                        void (*function)(context_p, int, char**))
 {
-    context_p current = ctx;
+    context_p current;
 
     if (ctx == NULL)
     {
@@ -337,29 +306,9 @@ template_register_pair(context_p ctx, char named_context, char *open_name,
         return 0;
     }
 
-    while (current->parent_context != NULL)
-    {
-        current = current->parent_context;
-    }
+    current = context_root(ctx);
     return(tagplist_register(&(current->tag_pairs), named_context, open_name,
                              close_name, function));
-}
-
-
-
-/* ====================================================================
- * NAME:          template_set_value
- *
- * DESCRIPTION:   Sets a variable within the given context to a new value.
- *
- * RETURN VALUES: The return of context_set_value (true or false)
- *
- * BUGS:          Should it be a macro?
- * ==================================================================== */
-int
-template_set_value(context_p ctx, char *name, char *value)
-{
-    return(context_set_value(ctx, name, value));
 }
 
 
@@ -384,6 +333,7 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
     char        *template;
     char        *real_filename;
     int         retval;
+    token_group_p tokens = token_group_init();
 
     if ((template_filename == NULL) || (output == NULL))
     {
@@ -401,11 +351,16 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
         real_filename = (char *)malloc(size);
         if (dir[strlen(dir)] == '/')
         {
-            snprintf(real_filename, size, "%s%s", dir, template_filename);
+            strcpy(real_filename, dir);
+            strcat(real_filename, "/");
+            strcat(real_filename, template_filename);
+            real_filename[size] = '\0';
         }
         else
         {
-            snprintf(real_filename, size, "%s/%s", dir, template_filename);
+            strcpy(real_filename, dir);
+            strcat(real_filename, template_filename);
+            real_filename[size - 1] = '\0';
         }
 
         if (stat(real_filename, &finfo) != 0)
@@ -442,11 +397,24 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
 
     fclose(filehandle);
 
-    retval = parser(ctx, 1, template, output);
+    if (tokenize(ctx, template, tokens))
+    {
+        retval = parser(ctx, 1, tokens, output);
+    } else
+    {
+        retval = 0;
+    }
     free(real_filename);
     free(template);
+    token_group_destroy(tokens);
 
-    return(retval);
+    if (retval < 0)
+    {
+        return(0);
+    } else
+    {
+        return(1);
+    }
 }
 
 
@@ -464,25 +432,29 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
 int
 template_parse_string(context_p ctx, char *tmpl, char **output)
 {
-    return(parser(ctx, 1, tmpl, output));
+    token_group_p tokens = token_group_init();
+    int retval;
+
+    if (tokenize(ctx, tmpl, tokens))
+    {
+        retval = parser(ctx, 1, tokens, output);
+    } else
+    {
+        retval = 0;
+    }
+
+    token_group_destroy(tokens);
+
+    if (retval < 0)
+    {
+        return(0);
+    }
+    {
+        return(1);
+    }
 }
 
 
-
-/* ====================================================================
- * NAME:          template_destroy
- *
- * DESCRIPTION:   Frees up all the memory used by the templating library.
- *
- * RETURN VALUES: None.
- *
- * BUGS:          Hopefully none.
- * ==================================================================== */
-void
-template_destroy(context_p ctx)
-{
-    context_destroy(ctx);
-}
 
 /* ====================================================================
  * NAME:          template_strerror

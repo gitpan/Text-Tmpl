@@ -57,6 +57,12 @@ struct context_struct
 
     /* flags can be CTX_FLAG_* */
     unsigned char flags;
+
+    /* buffer for temporary string storage */
+    char *buffer;
+
+    /* buffer size */
+    int bufsize;
 };
 
 #ifdef __cplusplus
@@ -72,6 +78,7 @@ context_p context_get_named_child(context_p ctx, char *name);
 int       context_set_named_child(context_p ctx, char *name);
 context_p context_add_peer(context_p ctx);
 void      context_output_contents(context_p ctx, char output_contents);
+context_p context_root(context_p ctx);
 
 #ifdef __cplusplus
 }

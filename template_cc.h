@@ -66,10 +66,10 @@ public:
                                    new_open_name, new_close_name);
     }
 
-    int
+    void
     set_debug(int debug_level)
     {
-        return template_set_debug(t, debug_level);
+        template_set_debug(t, debug_level);
     }
 
     void

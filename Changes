@@ -1,3 +1,14 @@
+0.23	- redesign release
+	- added buffer to context structure to avoid mallocs
+	- added context_root function to return the root of a group of contexts
+	- eliminated memory leak in new parsing engine
+	- minor syntax fix to template_cc.h
+	- one-line wrapper functions replaced with macros
+	- minor optimizations to echo and include tag functions
+	- optimizations to the new parsing engine
+	- completely rewrote the parser as a separate tokenizer and a parser,
+	  a much cleaner approach
+0.22	- feature release
 	- removed calls to destroy() from tests
 	- added destroy() to Tmpl.pm for backwards compatibility, and removed
 	  references to destroy() from documentation

@@ -4,6 +4,7 @@
 #include <staglist.h>
 #include <tagplist.h>
 #include <default_tags.h>
+#include <tokens.h>
 
 #ifndef __TEMPLATE_H
 #define __TEMPLATE_H
@@ -23,13 +24,18 @@
 #define TMPL_EFOPEN		9
 #define TMPL_EPARSE		10
 #define TMPL_ESCREWY		11
+#define TMPL_ENOTOKEN		12
 
 #define TMPL_ERR_MIN            0
-#define TMPL_ERR_MAX            11
+#define TMPL_ERR_MAX            12
 
 #define TMPL_VARNAME_DIR        "INTERNAL_dir"
 #define TMPL_VARNAME_OTAG       "INTERNAL_otag"
 #define TMPL_VARNAME_CTAG       "INTERNAL_ctag"
+
+#define template_set_value(c, n, v)  context_set_value(c, n, v)
+#define template_destroy(c)          context_destroy(c)
+#define template_set_dir(c, d)       template_set_value(c, TMPL_VARNAME_DIR, d)
 
 #ifdef __cplusplus
 extern "C" {
@@ -53,9 +59,6 @@ int       template_alias_pair(context_p ctx, char *old_open_name,
                               char *new_close_name);
 void      template_set_debug(context_p ctx, int debug_level);
 void      template_set_strip(context_p ctx, int strip);
-int       template_set_dir(context_p ctx, char *directory);
-int       template_set_value(context_p ctx, char *name, char *value);
-void      template_destroy(context_p ctx);
 context_p template_loop_iteration(context_p ctx, char *loop_name);
 context_p template_fetch_loop_iteration(context_p ctx, char *loop_name,
                                         int iteration);

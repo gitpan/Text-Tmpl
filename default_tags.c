@@ -35,15 +35,7 @@
 void
 tag_pair_debug(context_p ctx, int argc, char **argv)
 {
-    context_p top_ctx = ctx;
-
-    /* rewind to the top of the context hierarchy */
-    while (top_ctx->parent_context != NULL)
-    {
-        top_ctx = top_ctx->parent_context;
-    }
-
-    dump_context(ctx, top_ctx, 0);
+    dump_context(ctx, context_root(ctx), 0);
 }
 
 
@@ -152,8 +144,16 @@ simple_tag_echo(context_p ctx, char **output, int argc, char **argv)
 
     *output = NULL;
     for (i = 1; i <= argc; i++) {
-        int size = strlen(argv[i]);
-        char *t = (char *)malloc(total_size + size + 1);
+        int size;
+        char *t;
+
+        if (argv[i] == NULL)
+        {
+            continue;
+        }
+
+        size = strlen(argv[i]);
+        t = (char *)malloc(total_size + size + 1);
 
         if (*output == NULL)
         {
@@ -162,7 +162,8 @@ simple_tag_echo(context_p ctx, char **output, int argc, char **argv)
         }
         else
         {
-            snprintf(t, total_size + size, "%s%s", *output, argv[i]);
+            strcpy(t, *output);
+            strcat(t, argv[i]);
             t[total_size + size] = '\0';
             free(*output);
         }
@@ -190,7 +191,7 @@ simple_tag_include(context_p ctx, char **output, int argc, char **argv)
 {
     struct stat finfo;
     FILE        *filehandle;
-    char        *filename;
+    context_p   rootctx = context_root(ctx);
 
     if (argc != 1)
     {
@@ -203,32 +204,52 @@ simple_tag_include(context_p ctx, char **output, int argc, char **argv)
         char *dir = context_get_value(ctx, TMPL_VARNAME_DIR);
         int size  = strlen(argv[1]) + strlen(dir) + 2;
 
-        filename = (char *)malloc(size);
+        if (rootctx->bufsize < size)
+        {
+            if (rootctx->buffer != NULL)
+            {
+                free(rootctx->buffer);
+            }
+            rootctx->buffer  = (char *)malloc(size);
+            rootctx->bufsize = size;
+        }
+
         if (dir[strlen(dir)] == '/')
         {
-            snprintf(filename, size, "%s%s", dir, argv[1]);
+            strcpy(rootctx->buffer, dir);
+            strcat(rootctx->buffer, argv[1]);
+            (rootctx->buffer)[size - 1] = '\0';
         }
         else
         {
-            snprintf(filename, size, "%s/%s", dir, argv[1]);
+            strcpy(rootctx->buffer, dir);
+            strcat(rootctx->buffer, "/");
+            strcat(rootctx->buffer, argv[1]);
+            (rootctx->buffer)[size] = '\0';
         }
 
-        if (stat(filename, &finfo) != 0)
+        if (stat(rootctx->buffer, &finfo) != 0)
         {
-            free(filename);
             *output = NULL;
             return;
         }
     }    
     else
     {   
-        filename = (char *)malloc(strlen(argv[1]) + 1);
-        strcpy(filename, argv[1]);
+        if (rootctx->bufsize < (strlen(argv[1] + 1)))
+        {
+            if (rootctx->buffer != NULL)
+            {
+                free(rootctx->buffer);
+            }
+            rootctx->buffer  = (char *)malloc(strlen(argv[1]) + 1);
+            rootctx->bufsize = strlen(argv[1] + 1);
+        }
+        strcpy(rootctx->buffer, argv[1]);
     }
 
-    if ((filehandle = fopen(filename, "r")) == NULL)
+    if ((filehandle = fopen(rootctx->buffer, "r")) == NULL)
     {
-        free(filename);
         *output = NULL;
         return;
     }
@@ -236,7 +257,6 @@ simple_tag_include(context_p ctx, char **output, int argc, char **argv)
     *output = (char *)malloc(finfo.st_size + 1);
     if (*output == NULL)
     {
-        free(filename);
         return;
     }
 
@@ -245,7 +265,6 @@ simple_tag_include(context_p ctx, char **output, int argc, char **argv)
 
     fclose(filehandle);
 
-    free(filename);
     return;
 }
 
@@ -387,7 +406,17 @@ dump_context(context_p ctx, context_p dump_ctx, int number)
     /* dump variables into a "variables" loop */
     while ((current_var != NULL) && (current_var->name != NULL))
     {
-        context_p iteration = template_loop_iteration(ctx, var_loop_name);
+        context_p iteration;
+
+        if ((strcmp(current_var->name, TMPL_VARNAME_OTAG) == 0)
+         || (strcmp(current_var->name, TMPL_VARNAME_DIR)  == 0)
+         || (strcmp(current_var->name, TMPL_VARNAME_CTAG) == 0))
+        {
+            current_var = current_var->next;
+            continue;
+        }
+
+        iteration = template_loop_iteration(ctx, var_loop_name);
         
         template_set_value(iteration, "variable_name",  current_var->name);
         template_set_value(iteration, "variable_value", current_var->value);

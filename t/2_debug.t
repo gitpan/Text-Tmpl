@@ -39,7 +39,7 @@ foreach my $inum (1 .. 2) {
 
 $output = $context->parse_file(TEMPLATE);
 
-if ((! defined $output) || ($output !~ $compare)) {
+if ((! defined $output) || ($output ne $compare)) {
     print "not ok 1\n";
 } else {
     print "ok 1\n";

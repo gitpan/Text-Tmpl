@@ -5,7 +5,7 @@ WriteMakefile(
     'VERSION_FROM' => 'Tmpl.pm',
     'OBJECT'       => 'context.o default_tags.o nclist.o parser.o '
                     . 'staglist.o tagplist.o template.o varlist.o '
-                    . 'perl_tags.o Tmpl.o',
+                    . 'tokens.o perl_tags.o Tmpl.o',
     'OPTIMIZE'     => '-O3',
     'INC'          => '-I.',
     'MAN3PODS'     => {
@@ -21,7 +21,8 @@ package MY;
 sub postamble { '
 
 TMPL_OBJS=context.o default_tags.o nclist.o parser.o \
-          staglist.o tagplist.o template.o varlist.o
+          staglist.o tagplist.o template.o varlist.o \
+          tokens.o
 
 libtmpl.a: ${TMPL_OBJS}
 	rm -f $@

@@ -26,6 +26,8 @@ tagplist.c
 tagplist.h
 template.c
 template.h
+tokens.c
+tokens.h
 varlist.c
 varlist.h
 template_cc.h

@@ -191,15 +191,9 @@ template_register_simple(ctx, name, code)
 		HV *stags;
 		HV *perl_simple_tags = perl_get_hv(PERL_TAGS_SIMPLE_TAG_HASH,
                                                    TRUE);
-		context_p current;
 		char key[20];
 	INIT:
-		current = ctx;
-		while (current->parent_context != NULL)
-		{
-			current = current->parent_context;
-		}
-		snprintf(key, 20, "%p", current);
+		snprintf(key, 20, "%p", context_root(ctx));
 
 		if (hv_exists(perl_simple_tags, key, strlen(key)))
 		{
@@ -229,15 +223,9 @@ template_alias_simple(ctx, old_name, new_name)
 		                                   TRUE);
 		SV *cref             = &PL_sv_undef;
 		HV *stags            = NULL;
-		context_p current;
 		char key[20];
 	INIT:
-		current = ctx;
-		while (current->parent_context != NULL)
-		{
-			current = current->parent_context;
-		}
-		snprintf(key, 20, "%p", current);
+		snprintf(key, 20, "%p", context_root(ctx));
 
 		if (hv_exists(perl_simple_tags, key, strlen(key)))
 		{
@@ -272,15 +260,9 @@ template_register_pair(ctx, named_context, open_name, close_name, code)
 		char *CLASS = NULL;
 		HV *tagps;
 		HV *perl_tag_pairs = perl_get_hv(PERL_TAGS_TAG_PAIR_HASH, TRUE);
-		context_p current;
 		char key[20];
 	INIT:
-		current = ctx;
-		while (current->parent_context != NULL)
-		{
-			current = current->parent_context;
-		}
-		snprintf(key, 20, "%p", current);
+		snprintf(key, 20, "%p", context_root(ctx));
 
 		if (hv_exists(perl_tag_pairs, key, strlen(key)))
 		{
@@ -315,15 +297,9 @@ template_alias_pair(ctx,old_open_name,old_close_name,new_open_name,new_close_nam
 		                                 TRUE);
 		SV *cref = &PL_sv_undef;
 		HV *tagps = NULL;
-		context_p current;
 		char key[20];
 	INIT:
-		current = ctx;
-		while (current->parent_context != NULL)
-		{
-			current = current->parent_context;
-		}
-		snprintf(key, 20, "%p", current);
+		snprintf(key, 20, "%p", context_root(ctx));
 
 		if (hv_exists(perl_tag_pairs, key, strlen(key)))
 		{

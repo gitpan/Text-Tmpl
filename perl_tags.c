@@ -37,7 +37,6 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     SV **coderef         = NULL;
     SV *perlcontext      = sv_newmortal();
     SV *tc               = sv_newmortal();
-    context_p current    = ctx;
     int i, retval;
     char key[20];
     dSP;
@@ -45,11 +44,7 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
 
 
     /* Build the unique key for this context */
-    while (current->parent_context != NULL)
-    {
-        current = current->parent_context;
-    }
-    snprintf(key, 20, "%p", current);
+    snprintf(key, 20, "%p", context_root(ctx));
 
 
     /* Create and bless a perl version of the context */
@@ -136,18 +131,13 @@ perl_tag_pair(context_p ctx, int argc, char **argv)
     SV **coderef       = NULL;
     SV *perlcontext    = sv_newmortal();
     SV *tc             = sv_newmortal();
-    context_p current  = ctx;
     int i;
     char key[20];
     dSP;
     CV *code;
 
     /* Build the unique key for this context */
-    while (current->parent_context != NULL)
-    {
-        current = current->parent_context;
-    }
-    snprintf(key, 20, "%p", current);
+    snprintf(key, 20, "%p", context_root(ctx));
 
 
     /* Create and bless a perl version of the context */

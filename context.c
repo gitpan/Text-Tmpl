@@ -43,6 +43,8 @@ context_init(void)
     ctx->next_context         = NULL;
     ctx->last_context         = ctx;
     ctx->flags                = CTX_FLAG_OUTPUT;
+    ctx->buffer               = NULL;
+    ctx->bufsize              = -1;
 
     return(ctx);
 }
@@ -88,6 +90,10 @@ context_destroy(context_p ctx)
     {
         tagplist_destroy(ctx->tag_pairs);
     }
+    if (ctx->buffer != NULL)
+    {
+        free(ctx->buffer);
+    }
 
     ctx->named_child_contexts = NULL;
     ctx->variables            = NULL;
@@ -96,6 +102,7 @@ context_destroy(context_p ctx)
     ctx->parent_context       = NULL;
     ctx->simple_tags          = NULL;
     ctx->tag_pairs            = NULL;
+    ctx->buffer               = NULL;
     free(ctx);
 
     context_destroy(next);
@@ -327,7 +334,7 @@ context_add_peer(context_p ctx)
 /* ====================================================================
  * NAME:          context_output_contents
  *
- * DESCRIPTION:   This function adds a peer context (a.k.a. loop iteration)
+ * DESCRIPTION:   This function sets or unsets the output flag in a context
  *
  * RETURN VALUES: None.
  *
@@ -350,4 +357,28 @@ context_output_contents(context_p ctx, char output_contents)
         ctx_unset_output(ctx);
     }
     return;
+}
+
+
+
+/* ====================================================================
+ * NAME:          context_root
+ *
+ * DESCRIPTION:   This function returns the root context for a given context.
+ *
+ * RETURN VALUES: The root context.
+ *
+ * BUGS:          Hopefully none.
+ * ==================================================================== */
+context_p
+context_root(context_p ctx)
+{
+     context_p root = ctx;
+
+     while (root->parent_context != NULL)
+     {
+         root = root->parent_context;
+     }
+
+     return root;
 }
