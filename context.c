@@ -53,6 +53,8 @@ context_init(void)
         return NULL;
     }
 
+    ctx->simple_tags     = NULL;
+    ctx->tag_pairs       = NULL;
     ctx->parent_context  = NULL;
     ctx->next_context    = NULL;
     ctx->output_contents = 1;
@@ -94,11 +96,21 @@ context_destroy(context_p ctx)
     {
         varlist_destroy(ctx->variables);
     }
+    if (ctx->simple_tags != NULL)
+    {
+        staglist_destroy(ctx->simple_tags);
+    }
+    if (ctx->tag_pairs != NULL)
+    {
+        tagplist_destroy(ctx->tag_pairs);
+    }
 
     ctx->named_child_contexts = NULL;
     ctx->variables            = NULL;
     ctx->next_context         = NULL;
     ctx->parent_context       = NULL;
+    ctx->simple_tags          = NULL;
+    ctx->tag_pairs            = NULL;
     free(ctx);
 
     context_destroy(next);

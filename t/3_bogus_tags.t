@@ -15,7 +15,7 @@ if (! defined $context) {
     print "not ok 1\n";
     exit(0);
 }
-my $comp_fh = new IO::File COMPARE, "r";
+my $comp_fh = new IO::File COMPARE, 'r';
 if (! defined $comp_fh) {
     print "not ok 1\n";
     exit(0);

@@ -7,10 +7,10 @@ use constant TEMPLATE_DEBUG_NONE => 0;
 use constant TEMPLATE_DEBUG_SOME => 1;
 use constant TEMPLATE_DEBUG_LOTS => 2;
 
-use constant TEMPLATE_TRUE  => "1";
-use constant TEMPLATE_FALSE => "0";
+use constant TEMPLATE_TRUE  => '1';
+use constant TEMPLATE_FALSE => '0';
 
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 use Exporter;
 
@@ -19,16 +19,14 @@ require AutoLoader;
 
 @ISA = qw(DynaLoader Exporter);
 
-@EXPORT_OK = qw(set_delimiters
-                register_simple
-                register_pair
-                TEMPLATE_DEBUG_NONE
+@EXPORT_OK = qw(TEMPLATE_DEBUG_NONE
                 TEMPLATE_DEBUG_SOME
                 TEMPLATE_DEBUG_LOTS
                 TEMPLATE_TRUE
                 TEMPLATE_FALSE);
 
 bootstrap Text::Tmpl $VERSION;
+
 
 
 ###############################################################################
@@ -54,6 +52,8 @@ sub new {
     return $self;
 }
 ### end new ###################################################################
+
+
 
 ###############################################################################
 ## set_values
@@ -102,14 +102,21 @@ B<use Text::Tmpl;>
 
 $context    = B<new Text::Tmpl>;
 
-$return     = B<Text::Tmpl::set_delimiters>($opentag,
+$return     = $context->B<set_delimiters>($opentag,
                  $closetag);
 
-$return     = B<Text::Tmpl::register_simple>($name,
+$return     = $context->B<register_simple>($name,
                  $coderef);
 
-$return     = B<Text::Tmpl::register_pair>($isnamed,
+$return     = $context->B<register_pair>($isnamed,
                  $open_name, $close_name, $coderef);
+
+$return     = $context->B<alias_simple>($old_name,
+                 $new_name);
+
+$return     = $context->B<alias_pair>($old_open_name,
+                 $old_close_name, $new_open_name,
+                 $new_close_name);
 
 $return     = $context->B<set_debug>($debug_level);
 
@@ -149,73 +156,83 @@ Each function is described below:
 
 =over 3
 
-=item B<Text::Tmpl::new>
+=item B<new>
 
 This function initializes the library.  It allocates and returns the "global"
 context structure, and also configures all of the default tag behavior.
 
-=item B<Text::Tmpl::set_delimiters>
+=item B<set_delimiters>
 
 This function lets you change the delimiters marking the beginning and end
-of a tag (by default, these are "<!--#" and "-->".  There is an arbitrary
-limit of 6 characters on these strings.
+of a tag (by default, these are "<!--#" and "-->"), for the specified context.
 
-=item B<Text::Tmpl::set_value>
+=item B<set_value>
 
 This function stores the name=value pair in the current context.
 
-=item B<Text::Tmpl::set_values>
+=item B<set_values>
 
 This function dumps the name=value pairs from a hash reference into the
 current context.
 
-=item B<Text::Tmpl::set_debug>
+=item B<set_debug>
 
 This function sets the debugging level (from 0 = silent to 2 = verbose).  Note
 that debugging output hasn't been written yet - this is just a placeholder.
 
-=item B<Text::Tmpl::set_strip>
+=item B<set_strip>
 
 This function enables or disables the newline stripping feature.  If enabled,
 the parser removes a single newline (if present) from after any tag.
 
-=item B<Text::Tmpl::set_dir>
+=item B<set_dir>
 
 This function sets the directory where templates will be sought, both by
 parse_file and by the include tag.  Search order is always current directory
 then this searched directory.
 
-=item B<Text::Tmpl::loop_iteration>
+=item B<loop_iteration>
 
 This function adds an iteration to the loop named loop_name, and returns
 a unique context for that loop iteration.
 
-=item B<Text::Tmpl::parse_file>
+=item B<parse_file>
 
 This function opens $template_filename, and parses the contents of
 that file as a template, returning the output.
 
-=item B<Text::Tmpl::parse_string>
+=item B<parse_string>
 
 This function parses template directly, in the same way that
 Text::Tmpl::parse_file does.
 
-=item B<Text::Tmpl::register_simple>
+=item B<register_simple>
 
 This function registers a new simple tag named $name, which when encountered
 will cause the parser to call $coderef.  See template_extend(1) for the
 gory details.
 
-=item B<Text::Tmpl::register_pair>
+=item B<register_pair>
 
 This function registers a new tag pair $open_name/$close_name, which when
 encountered will cause the parser to call $coderef.  See template_extend
 for the gory details.
 
-=item B<Text::Tmpl::destroy>
+=item B<alias_simple>
+
+This function copies the definition of a simple tag, previously registered as
+$old_name, to also be called by $new_name.
+
+=item B<alias_pair>
+
+This function copies the definition of a tag pair, previously registered as
+$old_open_name/$old_close_name, to also be called by
+$new_open_name/$new_close_name.
+
+=item B<destroy>
 
 This function blows away all of the memory allocated within the given context.
-You should really *only* call this on the context returned by
+You should really B<only> call this on the context returned by
 'new Text::Tmpl', and only at the end of your code.
 
 =back

@@ -10,16 +10,26 @@ context_p
 B<template_init>(void)
 
 int
-B<template_set_delimiters>(char *opentag, char *closetag)
+B<template_set_delimiters>(context_p ctx,
+   char *opentag, char *closetag)
 
 int
-B<template_register_simple>(char *name,
+B<template_register_simple>(context_p ctx, char *name,
    void (*function)(context_p, char **, int, char**))
 
 int
-B<template_register_pair>(char named_context,
-   char *open_name, char *close_name,
+B<template_register_pair>(context_p ctx,
+   char named_context, char *open_name, char *close_name,
    void (*function)(context_p, int, char**))
+
+int
+B<template_alias_simple>(context_p ctx, char *old_name,
+   char *new_name)
+
+int
+B<template_alias_pair>(context_p ctx,
+   char *old_open_name, char *old_close_name,
+   char *new_open_name, char *new_close_name)
 
 int
 B<template_set_value>(context_p ctx, char *name,
@@ -77,8 +87,7 @@ context structure, and also configures all of the default tag behavior.
 =item B<template_set_delimiters>
 
 This function lets you change the delimiters marking the beginning and end
-of a tag (by default, these are "<!--#" and "-->".  There is an arbitrary
-limit of 6 characters on these strings.
+of a tag (by default, these are "<!--#" and "-->" in the given context.
 
 =item B<template_set_value>
 
@@ -127,6 +136,17 @@ gory details.
 This function registers a new tag pair open_name/close_name, which when
 encountered will cause the parser to call function.  See template_extend
 for the gory details.
+
+=item B<template_alias_simple>
+
+This function copies the definition of a simple tag, previously registered as
+old_name, to also be called by new_name.
+
+=item B<template_alias_pair>
+
+This function copies the definition of a tag pair, previously registered as
+old_open_name/old_close_name, to also be called by
+new_open_name/new_close_name.
 
 =item B<template_destroy>
 

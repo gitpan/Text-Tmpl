@@ -82,6 +82,47 @@ staglist_destroy(staglist_p simple_tag_list)
 
 
 /* ====================================================================
+ * NAME:          staglist_alias
+ *
+ * DESCRIPTION:   Copy an existing tag to a new name.
+ *
+ * RETURN VALUES: Returns 0 upon failure; 1 on success.
+ *
+ * BUGS:          Hopefully none.
+ * ==================================================================== */
+int
+staglist_alias(staglist_p simple_tag_list, char *old_name, char *new_name)
+{
+    staglist_p current  = simple_tag_list;
+
+    /* Make sure the simple tag list isn't NULL */
+    if (simple_tag_list == NULL)
+    {
+        return 0;
+    }
+
+    /* Make sure that neither name is NULL */
+    if ((old_name == NULL) || (new_name == NULL))
+    {
+        return 0;
+    }
+
+    /* Walk through the list to find old_name */
+    while (current != NULL)
+    {
+        if ((current->name != NULL) && (strcmp(current->name, old_name) == 0))
+        {
+            return staglist_register(simple_tag_list, new_name,
+                                     current->function);
+        }
+        current = current->next;
+    }
+    return 0;
+}
+
+
+
+/* ====================================================================
  * NAME:          staglist_register
  *
  * DESCRIPTION:   Register a new tag and associated function to call.

@@ -1,27 +1,27 @@
 use strict;
 
-BEGIN { $^W = 1; $| = 1; print "1..10\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..12\n"; }
 
 use Text::Tmpl;
 
 my($return, $subcontext);
 my $context = new Text::Tmpl;
 
-$return = Text::Tmpl::set_delimiters(undef, undef);
+$return = $context->set_delimiters(undef, undef);
 if ($return) {
     print "not ok 1\n";
 } else {
     print "ok 1\n";
 }
 
-$return = Text::Tmpl::register_simple(undef, undef);
+$return = $context->register_simple(undef, undef);
 if ($return) {
     print "not ok 2\n";
 } else {
     print "ok 2\n";
 }
 
-$return = Text::Tmpl::register_pair(undef, undef, undef, undef);
+$return = $context->register_pair(undef, undef, undef, undef);
 if ($return) {
     print "not ok 3\n";
 } else {
@@ -76,3 +76,19 @@ if (defined $subcontext) {
 } else {
     print "ok 10\n";
 }
+
+$return = $context->alias_simple(undef, undef);
+if ($return) {
+    print "not ok 11\n";
+} else {
+    print "ok 11\n";
+}
+
+$return = $context->alias_pair(undef, undef, undef, undef);
+if ($return) {
+    print "not ok 12\n";
+} else {
+    print "ok 12\n"
+}
+
+$context->destroy();

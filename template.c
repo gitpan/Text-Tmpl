@@ -19,12 +19,6 @@
 #include <default_tags.h>
 
 
-staglist_p simple_tags;
-tagplist_p tag_pairs;
-char otag[TEMPLATE_DELIMITER_SIZE] = "<!--#";
-char ctag[TEMPLATE_DELIMITER_SIZE] = "-->";
-
-
 int  parser(context_p ctx, int looping, char *input, char **output);
 
 
@@ -51,43 +45,31 @@ template_init(void)
         return NULL;
     }
 
-    simple_tags = staglist_init();
-    if (simple_tags == NULL)
+    ctx->simple_tags = staglist_init();
+    if (ctx->simple_tags == NULL)
     {
         return NULL;
     }
 
-    tag_pairs = tagplist_init();
-    if (tag_pairs == NULL)
+    ctx->tag_pairs = tagplist_init();
+    if (ctx->tag_pairs == NULL)
     {
         return NULL;
     }
 
-    if (! staglist_exists(simple_tags, "echo")) {
-        template_register_simple("echo",    simple_tag_echo);
-    }
-    if (! staglist_exists(simple_tags, "include")) {
-        template_register_simple("include", simple_tag_include);
-    }
+    template_register_simple(ctx, "echo", simple_tag_echo);
+    template_register_simple(ctx, "include", simple_tag_include);
 
-    if (! tagplist_is_closetag(tag_pairs, "comment", "endcomment")) {
-        template_register_pair(0, "comment", "endcomment", tag_pair_comment);
-    }
-    if (! tagplist_is_closetag(tag_pairs, "loop", "endloop")) {
-        template_register_pair(1, "loop",    "endloop",    tag_pair_loop);
-    }
-    if (! tagplist_is_closetag(tag_pairs, "if", "endif")) {
-        template_register_pair(0, "if",      "endif",      tag_pair_if);
-    }
-    if (! tagplist_is_closetag(tag_pairs, "ifn", "endifn")) {
-        template_register_pair(0, "ifn",     "endifn",     tag_pair_ifn);
-    }
-    if (! tagplist_is_closetag(tag_pairs, "debug", "enddebug")) {
-        template_register_pair(0, "debug",   "enddebug",   tag_pair_debug);
-    }
+    template_register_pair(ctx, 0, "comment", "endcomment", tag_pair_comment);
+    template_register_pair(ctx, 1, "loop",    "endloop",    tag_pair_loop);
+    template_register_pair(ctx, 0, "if",      "endif",      tag_pair_if);
+    template_register_pair(ctx, 0, "ifn",     "endifn",     tag_pair_ifn);
+    template_register_pair(ctx, 0, "debug",   "enddebug",   tag_pair_debug);
 
     cwd = getcwd(NULL, MAXPATHLEN);
 
+    template_set_value(ctx, "INTERNAL_otag",  "<!--#");
+    template_set_value(ctx, "INTERNAL_ctag",  "-->");
     template_set_value(ctx, "INTERNAL_debug", "0");
     template_set_value(ctx, "INTERNAL_strip", "1");
     template_set_value(ctx, "INTERNAL_dir",   cwd);
@@ -204,18 +186,54 @@ template_set_dir(context_p ctx, char *directory)
  * BUGS:          Hopefully none.
  * ==================================================================== */
 int
-template_set_delimiters(char *opentag, char *closetag)
+template_set_delimiters(context_p ctx, char *opentag, char *closetag)
 {
-    if ((strlen(opentag) > TEMPLATE_DELIMITER_SIZE)
-        || (strlen(closetag) > TEMPLATE_DELIMITER_SIZE))
+    if ((opentag == NULL) || (closetag == NULL))
     {
         return 0;
     }
 
-    strncpy(otag,  opentag, TEMPLATE_DELIMITER_SIZE);
-    strncpy(ctag, closetag, TEMPLATE_DELIMITER_SIZE);
+    if (ctx == NULL)
+    {
+        return 0;
+    }
+
+    if ((! template_set_value(ctx, "INTERNAL_otag", opentag))
+     || (! template_set_value(ctx, "INTERNAL_ctag", closetag)))
+    {
+        return 0;
+    }
 
     return 1;
+}
+
+
+
+/* ====================================================================
+ * NAME:          template_alias_simple
+ *
+ * DESCRIPTION:   Copy an existing simple tag to a new tag name.
+ *
+ * RETURN VALUES: The return of staglist_alias (true or false)
+ *
+ * BUGS:          Should it verify that the tag name isn't taken as a tag
+ *                pair name?
+ * ==================================================================== */
+int
+template_alias_simple(context_p ctx, char *old_name, char *new_name)
+{
+    context_p current = ctx;
+
+    if (ctx == NULL)
+    {
+        return 0;
+    }
+
+    while (current->parent_context != NULL)
+    {
+        current = current->parent_context;
+    }
+    return(staglist_alias(current->simple_tags, old_name, new_name));
 }
 
 
@@ -231,10 +249,52 @@ template_set_delimiters(char *opentag, char *closetag)
  *                pair name?
  * ==================================================================== */
 int
-template_register_simple(char *name,
+template_register_simple(context_p ctx, char *name,
                          void (*function)(context_p, char **, int, char**))
 {
-    return(staglist_register(simple_tags, name, function));
+    context_p current = ctx;
+
+    if (ctx == NULL)
+    {
+        return 0;
+    }
+
+    while (current->parent_context != NULL)
+    {
+        current = current->parent_context;
+    }
+    return(staglist_register(current->simple_tags, name, function));
+}
+
+
+
+/* ====================================================================
+ * NAME:          template_alias_simple
+ *
+ * DESCRIPTION:   Copy an existing tag pair to a new tag pair name.
+ *
+ * RETURN VALUES: The return of tagplist_alias (true or false)
+ *
+ * BUGS:          Should it verify that the tag name isn't taken as a 
+ *                simple tag name?
+ * ==================================================================== */
+int
+template_alias_pair(context_p ctx, char *old_open_name, char *old_close_name,
+                    char *new_open_name, char *new_close_name)
+{
+    context_p current = ctx;
+
+    if (ctx == NULL)
+    {
+        return 0;
+    }
+
+    while (current->parent_context != NULL)
+    {
+        current = current->parent_context;
+    }
+    return(tagplist_alias(current->tag_pairs, old_open_name, old_close_name,
+                          new_open_name, new_close_name));
 }
 
 
@@ -250,11 +310,23 @@ template_register_simple(char *name,
  *                simple tag name?
  * ==================================================================== */
 int
-template_register_pair(char named_context, char *open_name, char *close_name,
+template_register_pair(context_p ctx, char named_context, char *open_name,
+                       char *close_name,
                        void (*function)(context_p, int, char**))
 {
-    return(tagplist_register(tag_pairs, named_context, open_name, close_name,
-                             function));
+    context_p current = ctx;
+
+    if (ctx == NULL)
+    {
+        return 0;
+    }
+
+    while (current->parent_context != NULL)
+    {
+        current = current->parent_context;
+    }
+    return(tagplist_register(current->tag_pairs, named_context, open_name,
+                             close_name, function));
 }
 
 
@@ -390,8 +462,4 @@ void
 template_destroy(context_p ctx)
 {
     context_destroy(ctx);
-    staglist_destroy(simple_tags);
-    simple_tags = NULL;
-    tagplist_destroy(tag_pairs);
-    tag_pairs = NULL;
 }

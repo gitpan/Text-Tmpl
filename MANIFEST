@@ -66,3 +66,6 @@ t/3_undef_input.t
 t/3_bogus_tags.t
 t/3_bogus_tags.tmpl
 t/3_bogus_tags.comp
+t/3_multiplicity.t
+t/3_multiplicity.tmpl
+t/3_multiplicity.comp

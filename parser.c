@@ -42,10 +42,23 @@ void append_output(char **output, char *append, int append_length,
 int
 parser(context_p ctx, int looping, char *input, char **output)
 {
-    context_p current = ctx;
-    int  output_size  = 1024;
-    int i;
-    int strip = string_truth(context_get_value(ctx, "INTERNAL_strip"));
+    context_p  current     = ctx;
+    int        output_size = 1024;
+    int        i;
+    int        strip       = string_truth(context_get_value(ctx,
+                                                            "INTERNAL_strip"));
+    char *     otag        = context_get_value(ctx, "INTERNAL_otag");
+    char *     ctag        = context_get_value(ctx, "INTERNAL_ctag");
+    context_p  rootctx     = ctx;
+    staglist_p simple_tags = NULL;
+    tagplist_p tag_pairs   = NULL;
+
+    while (rootctx->parent_context != NULL)
+    {
+        rootctx = rootctx->parent_context;
+    }
+    simple_tags = rootctx->simple_tags;
+    tag_pairs   = rootctx->tag_pairs;
 
     *output = (char *)calloc(1, output_size);
     if (*output == NULL)

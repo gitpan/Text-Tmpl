@@ -6,6 +6,8 @@ typedef struct context_struct *context_p;
 
 #include <varlist.h>
 #include <nclist.h>
+#include <staglist.h>
+#include <tagplist.h>
 
 struct context_struct
 {
@@ -14,6 +16,12 @@ struct context_struct
 
     /* table of named child contexts */
     nclist_p  named_child_contexts;
+
+    /* table of simple tags */
+    staglist_p simple_tags;
+
+    /* table of tag pairs */
+    tagplist_p tag_pairs;
 
     /* pointer to parent context, or NULL if this is the top context */
     context_p parent_context;

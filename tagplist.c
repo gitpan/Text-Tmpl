@@ -88,6 +88,53 @@ tagplist_destroy(tagplist_p tag_pair_list)
 
 
 /* ====================================================================
+ * NAME:          tagplist_alias
+ *
+ * DESCRIPTION:   Copy an existing tag pair to a new tag pair name.
+ *
+ * RETURN VALUES: Returns 0 upon failure; 1 on success.
+ *
+ * BUGS:          Hopefully none.
+ * ==================================================================== */
+int
+tagplist_alias(tagplist_p tag_pair_list, char *old_open_name,
+               char *old_close_name, char *new_open_name, char *new_close_name)
+{
+    tagplist_p current = tag_pair_list;
+
+    /* Make sure the tag_pair_list is not NULL */
+    if (tag_pair_list == NULL)
+    {
+        return 0;
+    }
+
+    /* Make sure the names are not NULL */
+    if ((old_open_name == NULL) || (old_close_name == NULL)
+       || (new_open_name == NULL) || (new_close_name == NULL))
+    {
+        return 0;
+    }
+
+    /* Walk through the contexts to find the old tag */
+    while (current != NULL)
+    {
+        if ((current->open_name != NULL) && (current->close_name != NULL)
+           && (strcmp(current->open_name, old_open_name) == 0)
+           && (strcmp(current->close_name, old_close_name) == 0))
+        {
+            return tagplist_register(tag_pair_list, current->named_context,
+                                     new_open_name, new_close_name,
+                                     current->function);
+        }
+        current = current->next;
+    }
+
+    return 0;
+}
+
+
+
+/* ====================================================================
  * NAME:          tagplist_register
  *
  * DESCRIPTION:   Register a new tag pair and associated function to call.

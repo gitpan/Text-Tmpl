@@ -1,7 +1,7 @@
 use strict;
 use vars qw($loaded);
 
-BEGIN { $^W = 1; $| = 1; print "1..23\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..30\n"; }
 
 use Text::Tmpl;
 
@@ -15,151 +15,200 @@ if (! defined($context)) {
     print "ok 1\n";
 }
 
-$return = Text::Tmpl::set_delimiters('<%', '%>');
+$return = Text::Tmpl::set_delimiters($context, '<%', '%>');
 if (! $return) {
     print "not ok 2\n";
 } else {
     print "ok 2\n";
 }
 
-$return = Text::Tmpl::register_simple('foo', sub { });
+$return = Text::Tmpl::register_simple($context, 'foo', sub { });
 if (! $return) {
     print "not ok 3\n";
 } else {
     print "ok 3\n";
 }
 
-$return = Text::Tmpl::register_pair(0, 'bar', 'baz', sub { });
+$return = $context->register_simple('foo', sub { });
 if (! $return) {
     print "not ok 4\n";
 } else {
     print "ok 4\n";
 }
 
-$return = $context->set_debug(1);
+$return = Text::Tmpl::register_pair($context, 0, 'bar', 'baz', sub { });
 if (! $return) {
     print "not ok 5\n";
 } else {
     print "ok 5\n";
 }
 
-$return = $context->set_strip(1);
+$return = $context->register_pair(0, 'bar', 'baz', sub { });
 if (! $return) {
     print "not ok 6\n";
 } else {
     print "ok 6\n";
 }
 
-$return = $context->set_dir("/");
+$return = Text::Tmpl::alias_simple($context, 'foo', 'bar');
 if (! $return) {
     print "not ok 7\n";
 } else {
     print "ok 7\n";
 }
 
-$return = $context->set_value('foo', 'bar');
+$return = $context->alias_simple('foo', 'bar');
 if (! $return) {
     print "not ok 8\n";
 } else {
     print "ok 8\n";
 }
 
-$return = $context->set_values({'foo' => 'bar',
-                                'bar' => 'baz'});
+$return = Text::Tmpl::alias_pair($context, 'bar', 'baz', 'barney', 'fred');
 if (! $return) {
     print "not ok 9\n";
 } else {
     print "ok 9\n";
 }
 
-$subcontext = $context->loop_iteration('foo');
-if (! defined $subcontext) {
+$return = $context->alias_pair('bar', 'baz', 'barney', 'fred');
+if (! $return) {
     print "not ok 10\n";
 } else {
     print "ok 10\n";
 }
 
-$return = Text::Tmpl::set_debug($context, 1);
+$return = $context->set_debug(1);
 if (! $return) {
     print "not ok 11\n";
 } else {
     print "ok 11\n";
 }
 
-$return = Text::Tmpl::set_strip($context, 1);
+$return = $context->set_strip(1);
 if (! $return) {
     print "not ok 12\n";
 } else {
     print "ok 12\n";
 }
 
-$return = Text::Tmpl::set_dir($context, '/');
+$return = $context->set_dir('/');
 if (! $return) {
     print "not ok 13\n";
 } else {
     print "ok 13\n";
 }
 
-$return = Text::Tmpl::set_value($context, 'bar', 'baz');
+$return = $context->set_value('foo', 'bar');
 if (! $return) {
     print "not ok 14\n";
 } else {
     print "ok 14\n";
 }
 
-$return = Text::Tmpl::set_values($context, { 'foo' => 'bar',
-                                             'bar' => 'baz' });
+$return = $context->set_values({'foo' => 'bar',
+                                'bar' => 'baz'});
 if (! $return) {
     print "not ok 15\n";
 } else {
     print "ok 15\n";
 }
 
-
-$subcontext = Text::Tmpl::loop_iteration($context, 'bar');
+$subcontext = $context->loop_iteration('foo');
 if (! defined $subcontext) {
     print "not ok 16\n";
 } else {
     print "ok 16\n";
 }
 
-Text::Tmpl::destroy($context);
-print "ok 17\n";
+$return = Text::Tmpl::set_debug($context, 1);
+if (! $return) {
+    print "not ok 17\n";
+} else {
+    print "ok 17\n";
+}
 
-$context = new Text::Tmpl;
-if (! defined($context)) {
+$return = Text::Tmpl::set_strip($context, 1);
+if (! $return) {
     print "not ok 18\n";
 } else {
     print "ok 18\n";
 }
 
-$output = Text::Tmpl::parse_file($context, TEMPLATE);
-if (! defined($output)) {
+$return = Text::Tmpl::set_dir($context, '/');
+if (! $return) {
     print "not ok 19\n";
 } else {
     print "ok 19\n";
 }
 
-$output = $context->parse_file(TEMPLATE);
-if (! defined($output)) {
+$return = Text::Tmpl::set_value($context, 'bar', 'baz');
+if (! $return) {
     print "not ok 20\n";
 } else {
     print "ok 20\n";
 }
 
-$output = Text::Tmpl::parse_string($context, "this is not a test");
-if (! defined($output)) {
+$return = Text::Tmpl::set_values($context, { 'foo' => 'bar',
+                                             'bar' => 'baz' });
+if (! $return) {
     print "not ok 21\n";
 } else {
     print "ok 21\n";
 }
 
-$output = $context->parse_string("this is not a test");
-if (! defined($output)) {
+
+$subcontext = Text::Tmpl::loop_iteration($context, 'bar');
+if (! defined $subcontext) {
     print "not ok 22\n";
 } else {
     print "ok 22\n";
 }
 
-$context->destroy();
+Text::Tmpl::destroy($context);
 print "ok 23\n";
+
+$context = new Text::Tmpl;
+if (! defined($context)) {
+    print "not ok 24\n";
+} else {
+    print "ok 24\n";
+}
+
+$output = Text::Tmpl::parse_file($context, TEMPLATE);
+if (! defined($output)) {
+    print "not ok 25\n";
+} else {
+    print "ok 25\n";
+}
+
+$output = $context->parse_file(TEMPLATE);
+if (! defined($output)) {
+    print "not ok 26\n";
+} else {
+    print "ok 26\n";
+}
+
+$output = Text::Tmpl::parse_string($context, 'this is not a test');
+if (! defined($output)) {
+    print "not ok 27\n";
+} else {
+    print "ok 27\n";
+}
+
+$output = $context->parse_string('this is not a test');
+if (! defined($output)) {
+    print "not ok 28\n";
+} else {
+    print "ok 28\n";
+}
+
+$return = $context->set_delimiters('<%', '%>');
+if (! $return) {
+    print "not ok 29\n";
+} else {
+    print "ok 29\n";
+}
+
+$context->destroy();
+print "ok 30\n";

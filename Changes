@@ -1,3 +1,19 @@
+0.14	- bugfix and feature release
+	- Cleaned up the perl_tags.c code a little.
+	- Moved tag delimiters into context-specific variables.  (No more
+	  globals!)  Related test and documentation changes.  As a side
+	  effect, there is no arbitrary limit on tag delimiter size anymore.
+	- Updated perl_tags.c and Tmpl.xs so that perl tags are also
+	  context-specific.
+	- Made simple tags and tag pairs context-specific, with attendant
+	  test and documentation changes.  This fixes bugs related to
+	  multiple contexts.
+	- Added 3_multiplicity test to detect glaring multiple context
+	  problems.  (Vladimir Tomasovic <Vladimir.Tomasovic@kiss.sk>)
+	- Added alias_simple and alias_pair functions, and all relevant
+	  tests and documentation.
+	- switched to PL_na and PL_sv_undef notation, and added #defines
+	  for backwards compatibility (schinder@pobox.com)
 0.13	- bugfix and feature release
 	- added t/1_exporter.t to test use of exported symbols
 	- made Text::Tmpl a subclass of Exporter, and added the package

@@ -6,15 +6,15 @@ template_extend - how to extend the Text::Tmpl template library (with C or Perl)
 
 Perl:
 
- Text::Tmpl::register_simple("name", \&simple_handler);
+ $context->register_simple("name", \&simple_handler);
  sub simple_handler {
      my($context, $name, @args) = @_;
      # do stuff to build a return string
      return "result string!";
  }
 
- Text::Tmpl::register_pair($is_named, "open",
-                                   "close", \&pair_handler);
+ $context->register_pair($is_named, "open", "close",
+                         \&pair_handler);
  sub pair_handler {
      my($context, $name, @args) = @_;
      # do stuff to the context
@@ -29,7 +29,7 @@ Perl:
 
 C:
 
- int template_register_simple(char *name,
+ int template_register_simple(context_p ctx, char *name,
     void (*function)(context_p, char **, int, char**))
  void
  simple_handler(context_p ctx, char **output, int argc, char **argv) {
@@ -40,7 +40,7 @@ C:
      return;
  }
 
- int template_register_pair(char named_context,
+ int template_register_pair(context_p ctx, char named_context,
     char *open_name, char *close_name,
     void (*function)(context_p, int, char**))
  void
@@ -62,8 +62,10 @@ somewhat daunting API.  The perl and C APIs are virtually identical in
 both usage and effects, so I'm going to be discussing the process in a
 (hopefully) language independent way.
 
-Note that tags are all global in scope - a tag can be registered at any
+Note that tags are global in scope - a tag can be registered at any
 point before the parsing stage and will be visible to the entire template.
+This may change in future versions, if there seems to be a demand for
+scoped tags.
 
 =head2 Tag Argument Passing
 
