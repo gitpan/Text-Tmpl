@@ -60,12 +60,13 @@ parser(context_p ctx, int looping, char *input, char **output)
     simple_tags = rootctx->simple_tags;
     tag_pairs   = rootctx->tag_pairs;
 
-    *output = (char *)calloc(1, output_size);
+    *output = (char *)malloc(output_size);
     if (*output == NULL)
     {
         template_errno = TMPL_EMALLOC;
         return 0;
     }
+    (*output)[0] = '\0';
 
     if (ctx == NULL)
     {
@@ -461,6 +462,7 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
             }
             t = (char *)malloc(cursize);
             strncpy(t, *outarg, index);
+            t[index] = '\0';
 
             free(*outarg);
             *outarg = t;

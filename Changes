@@ -1,3 +1,7 @@
+0.20	- bugfix release
+	- fixed a null termination bug in the parser (ak@dasburo.de)
+	- added t/3_relationships.t to test for bugs related to the size of
+	  variables and the size of variable names
 0.19	- performance release
 	- modified append_output() in parser.c to never call strlen(), which
 	  is a *huge* performance win for large templates
