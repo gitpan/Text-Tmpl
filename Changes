@@ -1,3 +1,6 @@
+0.26    - bugfix release
+        - fixed core when passing null values into perl extension tags
+          (dan@unpossible.com)
 0.25	- bugfix release
 	- fixed hanging when a tag pair isn't closed (jon@binadopta.com)
 	- fixed Win32 crash in template_parse_(file|string) (dan@unpossible.com)

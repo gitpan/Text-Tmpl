@@ -43,15 +43,12 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     dSP;
     CV *code;
 
-
     /* Build the unique key for this context */
     snprintf(key, 20, "%p", context_root(ctx));
-
 
     /* Create and bless a perl version of the context */
     sv_magic(tc, sv_2mortal(newSViv((I32)ctx)), '~', NULL, 0);
     perlcontext = sv_bless(newRV(tc), gv_stashpv(TEMPLATE_PACKAGE, 0));
-
 
     /* Fetch a code reference out of the perl_simple_tags hash */
     if (hv_exists(perl_simple_tags, key, strlen(key)))
@@ -72,7 +69,6 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     }
     code = (CV *)*coderef;
 
-
     ENTER;
     SAVETMPS;
 
@@ -83,7 +79,14 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     XPUSHs(perlcontext);
     for (i = 0; i <= argc; i++)
     {
-        XPUSHs(sv_2mortal(newSVpv(argv[i], strlen(argv[i]))));
+        if (argv[i] != NULL)
+        {
+            XPUSHs(sv_2mortal(newSVpv(argv[i], strlen(argv[i]))));
+        }
+        else
+        {
+            XPUSHs(&PL_sv_undef);
+        }
     }
 
     PUTBACK;
@@ -91,7 +94,6 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     retval = perl_call_sv((SV *)code, G_SCALAR);
 
     SPAGAIN;
-
 
     /* Translate the return into a char* for parser */
     if (retval == 1)
@@ -174,7 +176,14 @@ perl_tag_pair(context_p ctx, int argc, char **argv)
     XPUSHs(perlcontext);
     for (i = 0; i <= argc; i++)
     {
-        XPUSHs(sv_2mortal(newSVpv(argv[i], strlen(argv[i]))));
+        if (argv[i] != NULL)
+        {
+            XPUSHs(sv_2mortal(newSVpv(argv[i], strlen(argv[i]))));
+        }
+        else
+        {
+            XPUSHs(&PL_sv_undef);
+        }
     }
 
     PUTBACK;
