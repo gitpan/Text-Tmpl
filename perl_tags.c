@@ -98,11 +98,17 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     /* Translate the return into a char* for parser */
     if (retval == 1)
     {
-        char *t = POPp;
+        SV *s = POPs;
 
-        *output = (char *)malloc(strlen(t) + 1);
-        strncpy(*output, t, strlen(t));
-        (*output)[strlen(t)] = '\0';
+        if (! SvPOK(s)) {
+            *output = NULL;
+        } else {
+            char *t = SvPVX(s);
+
+            *output = (char *)malloc(strlen(t) + 1);
+            strncpy(*output, t, strlen(t));
+            (*output)[strlen(t)] = '\0';
+        }
     }
     else
     {

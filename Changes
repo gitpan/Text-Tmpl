@@ -1,3 +1,5 @@
+0.27    - bugfix release
+        - fixed warnings when perl extension tags return undef
 0.26    - bugfix release
         - fixed core when passing null values into perl extension tags
           (dan@unpossible.com)
