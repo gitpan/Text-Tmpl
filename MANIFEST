@@ -69,3 +69,8 @@ t/3_bogus_tags.comp
 t/3_multiplicity.t
 t/3_multiplicity.tmpl
 t/3_multiplicity.comp
+t/3_subclass.t
+t/3_subclass.tmpl
+t/3_subclass.comp
+t/3_long_lists.t
+t/3_huge_input.t

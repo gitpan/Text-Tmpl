@@ -6,7 +6,7 @@ WriteMakefile(
     'OBJECT'       => 'context.o default_tags.o nclist.o parser.o '
                     . 'staglist.o tagplist.o template.o varlist.o '
                     . 'perl_tags.o Tmpl.o',
-    'OPTIMIZE'     => '-O3 -g',
+    'OPTIMIZE'     => '-O3',
     'INC'          => '-I.',
     'MAN3PODS'     => {
                         'Tmpl.pm'             => 'blib/man3/Text::Tmpl.3',

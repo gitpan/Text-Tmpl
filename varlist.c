@@ -121,8 +121,7 @@ varlist_get_value(varlist_p variable_list, char *name)
  * NAME:          varlist_set_value
  *
  * DESCRIPTION:   Set a variable in the given varlist to be equal to
- *                the value given.  This will overwrite existing values
- *                silently, and will also expand the list if need be.
+ *                the value given.
  *
  * RETURN VALUES: Returns 0 if there's any trouble.  Returns 1 if the
  *                variable was successfully set.
@@ -130,12 +129,9 @@ varlist_get_value(varlist_p variable_list, char *name)
  * BUGS:          Hopefully none.
  * ==================================================================== */
 int
-varlist_set_value(varlist_p variable_list, char *name, char *value)
+varlist_set_value(varlist_p *variable_list, char *name, char *value)
 {
-    varlist_p current  = variable_list;
-    varlist_p existing = NULL;
-    varlist_p last     = NULL;
-
+    varlist_p new = NULL;
 
     /* Make sure that the pointer passed in wasn't NULL */
     if (variable_list == NULL)
@@ -143,42 +139,29 @@ varlist_set_value(varlist_p variable_list, char *name, char *value)
         return 0;
     }
 
-    while (current != NULL)
+    /* Make sure that the name and value aren't NULL */
+    if ((name == NULL) || (value == NULL))
     {
-        if ((current->name != NULL) && (current->value != NULL)
-            && (strcmp(current->name, name) == 0))
-        {
-            existing = current;
-        }
-        last    = current;
-        current = current->next;
+        return 0;
     }
 
-    if (existing == NULL)
+    new = varlist_init();
+    if (new == NULL)
     {
-        if (last->value == NULL)
-        {
-            existing = last;
-        } else {
-            last->next    = varlist_init();
-            existing      = last->next;
+        return 0;
+    }
 
-            if (existing == NULL)
-            {
-                return 0;
-            }
-        }
-        existing->name = (char *)malloc(strlen(name) + 1);
-        strncpy(existing->name, name, strlen(name));
-        existing->name[strlen(name)] = '\0';
-    }
-    if (existing->value != NULL)
-    {
-        free(existing->value);
-    }
-    existing->value = (char *)malloc(strlen(value) + 1);
-    strncpy(existing->value, value, strlen(value));
-    existing->value[strlen(value)] = '\0';
+    new->name = (char *)malloc(strlen(name) + 1);
+    strncpy(new->name, name, strlen(name));
+    new->name[strlen(name)] = '\0';
+
+    new->value = (char *)malloc(strlen(value) + 1);
+    strncpy(new->value, value, strlen(value));
+    new->value[strlen(value)] = '\0';
+
+    new->next = *variable_list;
+
+    *variable_list = new;
 
     return 1;
 }

@@ -18,6 +18,10 @@
 #include <template.h>
 #include <default_tags.h>
 
+#ifndef MAXPATHLEN
+#define MAXPATHLEN 1024
+#endif /* MAXPATHLEN */
+
 
 int  parser(context_p ctx, int looping, char *input, char **output);
 
@@ -66,7 +70,8 @@ template_init(void)
     template_register_pair(ctx, 0, "ifn",     "endifn",     tag_pair_ifn);
     template_register_pair(ctx, 0, "debug",   "enddebug",   tag_pair_debug);
 
-    cwd = getcwd(NULL, MAXPATHLEN);
+    cwd = (char *)malloc(MAXPATHLEN);
+    getcwd(cwd, MAXPATHLEN);
 
     template_set_value(ctx, "INTERNAL_otag",  "<!--#");
     template_set_value(ctx, "INTERNAL_ctag",  "-->");
@@ -233,7 +238,7 @@ template_alias_simple(context_p ctx, char *old_name, char *new_name)
     {
         current = current->parent_context;
     }
-    return(staglist_alias(current->simple_tags, old_name, new_name));
+    return(staglist_alias(&(current->simple_tags), old_name, new_name));
 }
 
 
@@ -263,7 +268,7 @@ template_register_simple(context_p ctx, char *name,
     {
         current = current->parent_context;
     }
-    return(staglist_register(current->simple_tags, name, function));
+    return(staglist_register(&(current->simple_tags), name, function));
 }
 
 
@@ -293,7 +298,7 @@ template_alias_pair(context_p ctx, char *old_open_name, char *old_close_name,
     {
         current = current->parent_context;
     }
-    return(tagplist_alias(current->tag_pairs, old_open_name, old_close_name,
+    return(tagplist_alias(&(current->tag_pairs), old_open_name, old_close_name,
                           new_open_name, new_close_name));
 }
 
@@ -325,7 +330,7 @@ template_register_pair(context_p ctx, char named_context, char *open_name,
     {
         current = current->parent_context;
     }
-    return(tagplist_register(current->tag_pairs, named_context, open_name,
+    return(tagplist_register(&(current->tag_pairs), named_context, open_name,
                              close_name, function));
 }
 

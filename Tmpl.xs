@@ -18,46 +18,62 @@ PROTOTYPES: ENABLE
 
 context_p
 template_init()
+	PREINIT:
+		char *CLASS = NULL;
 
 int
 template_set_delimiters(ctx, opentag, closetag)
 	context_p	ctx
 	char *		opentag
 	char *		closetag
+	PREINIT:
+		char *CLASS = NULL;
 
 int
 template_set_debug(ctx, debug_level)
 	context_p	ctx
 	int		debug_level
+	PREINIT:
+		char *CLASS = NULL;
 
 int
 template_set_strip(ctx, strip)
 	context_p	ctx
 	int		strip
+	PREINIT:
+		char *CLASS = NULL;
 
 int
 template_set_dir(ctx, directory)
 	context_p	ctx
 	char *		directory
+	PREINIT:
+		char *CLASS = NULL;
 
 int
 template_set_value(ctx, name, value)
 	context_p	ctx
 	char *		name
 	char *		value
+	PREINIT:
+		char *CLASS = NULL;
 
 void
 template_destroy(ctx)
 	context_p	ctx
+	PREINIT:
+		char *CLASS = NULL;
 
 context_p
 template_loop_iteration(ctx, loop_name)
 	context_p	ctx
 	SV *	loop_name
 	PREINIT:
+		char *CLASS = NULL;
 		char *r_loop_name = NULL;
 	INIT:
-		if (loop_name == &PL_sv_undef) {
+		if (loop_name == &PL_sv_undef)
+		{
 		    XSRETURN_UNDEF;
 		}
 		r_loop_name = (char *)SvPV(loop_name, PL_na);
@@ -71,19 +87,24 @@ template_parse_file(ctx, template_filename)
 	context_p	ctx
 	SV *		template_filename
         PREINIT:
+		char *CLASS = NULL;
 		char *output = NULL;
 		char *r_template_filename = NULL;
 	INIT:
-		if (template_filename == &PL_sv_undef) {
+		if (template_filename == &PL_sv_undef)
+		{
 		    XSRETURN_UNDEF;
 		}
 		r_template_filename = (char *)SvPV(template_filename, PL_na);
 	CODE:
 		template_parse_file(ctx, r_template_filename, &output);
-                if (output != NULL) {
+                if (output != NULL)
+		{
                     RETVAL = newSVpv(output, strlen(output));
                     free(output);
-                } else {
+                }
+		else
+		{
                     XSRETURN_UNDEF;
                 }
 	OUTPUT:
@@ -94,19 +115,24 @@ template_parse_string(ctx, template)
 	context_p	ctx
 	SV *		template
 	PREINIT:
+		char *CLASS = NULL;
 		char *output = NULL;
 		char *r_template = NULL;
 	INIT:
-		if (template == &PL_sv_undef) {
+		if (template == &PL_sv_undef)
+		{
 		    XSRETURN_UNDEF;
 		}
 		r_template = (char *)SvPV(template, PL_na);
 	CODE:
 		template_parse_string(ctx, r_template, &output);
-                if (output != NULL) {
+                if (output != NULL)
+		{
                     RETVAL = newSVpv(output, strlen(output));
                     free(output);
-                } else {
+                }
+		else
+		{
                     XSRETURN_UNDEF;
                 }
 	OUTPUT:
@@ -118,6 +144,7 @@ template_register_simple(ctx, name, code)
 	char *		name
 	CV *		code
 	PREINIT:
+		char *CLASS = NULL;
 		HV *stags;
 		HV *perl_simple_tags = perl_get_hv(PERL_TAGS_SIMPLE_TAG_HASH,
                                                    TRUE);
@@ -125,15 +152,19 @@ template_register_simple(ctx, name, code)
 		char key[20];
 	INIT:
 		current = ctx;
-		while (current->parent_context != NULL) {
+		while (current->parent_context != NULL)
+		{
 			current = current->parent_context;
 		}
 		snprintf(key, 20, "%p", current);
 
-		if (hv_exists(perl_simple_tags, key, strlen(key))) {
+		if (hv_exists(perl_simple_tags, key, strlen(key)))
+		{
 			stags = (HV *)SvRV(*(hv_fetch(perl_simple_tags, key,
 			                              strlen(key), FALSE)));
-		} else {
+		}
+		else
+		{
 			stags = newHV();
 			hv_store(perl_simple_tags, key, strlen(key),
 			         newRV((SV *)stags), 0);
@@ -150,30 +181,34 @@ template_alias_simple(ctx, old_name, new_name)
 	char *		old_name
 	char *		new_name
 	PREINIT:
+		char *CLASS = NULL;
 		HV *perl_simple_tags = perl_get_hv(PERL_TAGS_SIMPLE_TAG_HASH,
 		                                   TRUE);
 		SV *cref             = &PL_sv_undef;
-		HV *stags;
+		HV *stags            = NULL;
 		context_p current;
 		char key[20];
 	INIT:
 		current = ctx;
-		while (current->parent_context != NULL) {
+		while (current->parent_context != NULL)
+		{
 			current = current->parent_context;
 		}
 		snprintf(key, 20, "%p", current);
 
-		if (hv_exists(perl_simple_tags, key, strlen(key))) {
+		if (hv_exists(perl_simple_tags, key, strlen(key)))
+		{
 			stags = (HV *)SvRV(*(hv_fetch(perl_simple_tags, key,
 			                                  strlen(key), FALSE)));
-			if (hv_exists(stags, old_name, strlen(old_name))) {
+			if (hv_exists(stags, old_name, strlen(old_name)))
+			{
 				cref = *(hv_fetch(stags, old_name,
 				                  strlen(old_name), FALSE));
 			}
 		}
 	CODE:
-		if ((cref != &PL_sv_undef)
-                   && (SvTYPE(SvRV(cref)) == SVt_PVCV)) {
+		if ((cref != &PL_sv_undef) && (SvTYPE(SvRV(cref)) == SVt_PVCV))
+		{
 			CV *code = (CV *)SvRV(cref);
 			hv_store(stags, new_name, strlen(new_name),
                                  newRV((SV *)code), 0);
@@ -191,22 +226,26 @@ template_register_pair(ctx, named_context, open_name, close_name, code)
 	char *		close_name
 	CV *		code
 	PREINIT:
+		char *CLASS = NULL;
 		HV *tagps;
-		HV *perl_tag_pairs = perl_get_hv(PERL_TAGS_TAG_PAIR_HASH,
-                                                 TRUE);
+		HV *perl_tag_pairs = perl_get_hv(PERL_TAGS_TAG_PAIR_HASH, TRUE);
 		context_p current;
 		char key[20];
 	INIT:
 		current = ctx;
-		while (current->parent_context != NULL) {
+		while (current->parent_context != NULL)
+		{
 			current = current->parent_context;
 		}
 		snprintf(key, 20, "%p", current);
 
-		if (hv_exists(perl_tag_pairs, key, strlen(key))) {
+		if (hv_exists(perl_tag_pairs, key, strlen(key)))
+		{
 			tagps = (HV *)SvRV(*(hv_fetch(perl_tag_pairs, key,
 			                              strlen(key), FALSE)));
-		} else {
+		}
+		else
+		{
 			tagps = newHV();
 			hv_store(perl_tag_pairs, key, strlen(key),
 			         newRV((SV *)tagps), 0);
@@ -228,31 +267,35 @@ template_alias_pair(ctx,old_open_name,old_close_name,new_open_name,new_close_nam
 	char *		new_open_name
 	char *		new_close_name
 	PREINIT:
+		char *CLASS = NULL;
 		HV *perl_tag_pairs = perl_get_hv(PERL_TAGS_TAG_PAIR_HASH,
 		                                 TRUE);
 		SV *cref = &PL_sv_undef;
-		HV *tagps;
+		HV *tagps = NULL;
 		context_p current;
 		char key[20];
 	INIT:
 		current = ctx;
-		while (current->parent_context != NULL) {
+		while (current->parent_context != NULL)
+		{
 			current = current->parent_context;
 		}
 		snprintf(key, 20, "%p", current);
 
-		if (hv_exists(perl_tag_pairs, key, strlen(key))) {
+		if (hv_exists(perl_tag_pairs, key, strlen(key)))
+		{
 			tagps = (HV *)SvRV(*(hv_fetch(perl_tag_pairs, key,
 			                              strlen(key), FALSE)));
 			if (hv_exists(tagps, old_open_name,
-			              strlen(old_open_name))) {
+			              strlen(old_open_name)))
+			{
 				cref = *(hv_fetch(tagps, old_open_name,
 				                  strlen(old_open_name), 0));
 			}
 		}
 	CODE:
-		if ((cref != &PL_sv_undef)
-		   && (SvTYPE(SvRV(cref)) == SVt_PVCV)) {
+		if ((cref != &PL_sv_undef) && (SvTYPE(SvRV(cref)) == SVt_PVCV))
+		{
 			CV *code = (CV *)SvRV(cref);
 			hv_store(tagps, new_open_name, strlen(new_open_name),
 			         newRV((SV *)code), 0);
@@ -267,28 +310,40 @@ char *
 context_get_value(ctx, name)
 	context_p	ctx
 	char *		name
+	PREINIT:
+		char *CLASS = NULL;
 
 context_p
 context_get_anonymous_child(ctx)
 	context_p	ctx
+	PREINIT:
+		char *CLASS = NULL;
 
 context_p
 context_get_named_child(ctx, name)
 	context_p	ctx
 	char *		name
+	PREINIT:
+		char *CLASS = NULL;
 
 int
 context_set_named_child(ctx, name)
 	context_p	ctx
 	char *		name
+	PREINIT:
+		char *CLASS = NULL;
 
 context_p
 context_add_peer(ctx)
 	context_p	ctx
+	PREINIT:
+		char *CLASS = NULL;
 
 void
 context_output_contents(ctx, output_contents)
 	context_p	ctx
 	int		output_contents
+	PREINIT:
+		char *CLASS = NULL;
 	CODE:
 		context_output_contents(ctx, (char)output_contents);

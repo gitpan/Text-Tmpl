@@ -6,14 +6,19 @@ int					T_INT
 
 INPUT
 T_CONTEXT
-	if( sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVMG) )
+	if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVMG))
+	{
 		$var = ($type)SvIV((SV*)SvRV( $arg ));
-	else {
+		CLASS = HvNAME(SvSTASH(SvRV(ST(0))));
+	}
+	else
+	{
 		warn(\"${Package}::$func_name() -- $var is not blessed\");
 		XSRETURN_UNDEF;
 	}
 T_CODEREF
-	if ($arg == &PL_sv_undef) {
+	if ($arg == &PL_sv_undef)
+	{
 		ST(0) = sv_2mortal(newSViv(0));
 		XSRETURN(1);
 	}
@@ -22,13 +27,15 @@ T_CODEREF
 	else
 		croak(\"$var is not a code reference\")
 T_CHARSTAR
-	if ($arg == &PL_sv_undef) {
+	if ($arg == &PL_sv_undef)
+	{
 		ST(0) = sv_2mortal(newSViv(0));
 		XSRETURN(1);
 	}
 	$var = (char *)SvPV($arg, PL_na);
 T_INT
-	if ($arg == &PL_sv_undef) {
+	if ($arg == &PL_sv_undef)
+	{
 		ST(0) = sv_2mortal(newSViv(0));
 		XSRETURN(1);
 	}
@@ -38,7 +45,14 @@ OUTPUT
 T_CODEREF
 	$arg = newRV((SV*)$var);
 T_CONTEXT
-	sv_setref_pv($arg, "Text::Tmpl", (void*)$var);
+	if (CLASS != NULL)
+	{
+		sv_setref_pv($arg, CLASS, (void*)$var);
+	}
+	else
+	{
+		sv_setref_pv($arg, TEMPLATE_PACKAGE, (void *)$var);
+	}
 T_CHARSTAR
 	sv_setpv((SV *)$arg, $var);
 T_INT

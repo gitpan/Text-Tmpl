@@ -171,7 +171,7 @@ context_set_value(context_p ctx, char *name, char *value)
     {
         return 0;
     }
-    return(varlist_set_value(ctx->variables, name, value));
+    return(varlist_set_value(&(ctx->variables), name, value));
 }
 
 
@@ -266,7 +266,7 @@ context_set_named_child(context_p ctx, char *name)
         return 0;
     }
 
-    if (! nclist_new_context(ctx->named_child_contexts, name))
+    if (! nclist_new_context(&(ctx->named_child_contexts), name))
     {
         return 0;
     }

@@ -21,9 +21,9 @@ extern "C" {
 
 staglist_p staglist_init();
 void       staglist_destroy(staglist_p simple_tag_list);
-int        staglist_alias(staglist_p simple_tag_list, char *old_name,
+int        staglist_alias(staglist_p *simple_tag_list, char *old_name,
                           char *new_name);
-int        staglist_register(staglist_p simple_tag_list, char *name,
+int        staglist_register(staglist_p *simple_tag_list, char *name,
                              void (*function)(context_p, char **, int, char**));
 int        staglist_exists(staglist_p simple_tag_list, char *name);
 int        staglist_exec(staglist_p simple_tag_list, char *name, context_p ctx,

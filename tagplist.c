@@ -97,13 +97,13 @@ tagplist_destroy(tagplist_p tag_pair_list)
  * BUGS:          Hopefully none.
  * ==================================================================== */
 int
-tagplist_alias(tagplist_p tag_pair_list, char *old_open_name,
+tagplist_alias(tagplist_p *tag_pair_list, char *old_open_name,
                char *old_close_name, char *new_open_name, char *new_close_name)
 {
-    tagplist_p current = tag_pair_list;
+    tagplist_p current = *tag_pair_list;
 
     /* Make sure the tag_pair_list is not NULL */
-    if (tag_pair_list == NULL)
+    if (*tag_pair_list == NULL)
     {
         return 0;
     }
@@ -144,12 +144,11 @@ tagplist_alias(tagplist_p tag_pair_list, char *old_open_name,
  * BUGS:          Hopefully none.
  * ==================================================================== */
 int
-tagplist_register(tagplist_p tag_pair_list, char named_context, char *open_name,
-                  char *close_name, void (*function) (context_p, int, char**))
+tagplist_register(tagplist_p *tag_pair_list, char named_context,
+                  char *open_name, char *close_name,
+                  void (*function) (context_p, int, char**))
 {
-    tagplist_p current  = tag_pair_list;
-    tagplist_p existing = NULL;
-    tagplist_p last     = NULL;
+    tagplist_p new = NULL;
 
     /* Make sure the function isn't NULL */
     if (function == NULL)
@@ -157,46 +156,32 @@ tagplist_register(tagplist_p tag_pair_list, char named_context, char *open_name,
         return 0;
     }
 
-    /* Walk through the whole list, marking any pre-existing tag of
-       this name, and marking the last element in the list */
-    while (current != NULL)
+    if ((open_name == NULL) || (close_name == NULL))
     {
-        if ((current->open_name != NULL) && (current->close_name != NULL)
-           && (strcmp(current->open_name, open_name) == 0)
-           && (strcmp(current->close_name, close_name) == 0))
-        {
-            existing = current;
-        }
-        last    = current;
-        current = current->next;
+        return 0;
     }
 
-    /* If the tag doesn't already exist, we may have to create a new list
-       element */
-    if (existing == NULL)
+    if (*tag_pair_list == NULL)
     {
-        if (last->function == NULL)
-        {
-            existing   = last;
-        } else {
-            last->next = tagplist_init();
-            existing   = last->next;
-
-            if (existing == NULL)
-            {
-                return 0;
-            }
-        }
-        existing->open_name = (char *)malloc(strlen(open_name) + 1);
-        strncpy(existing->open_name, open_name, strlen(open_name));
-        existing->open_name[strlen(open_name)] = '\0';
-
-        existing->close_name = (char *)malloc(strlen(close_name) + 1);
-        strncpy(existing->close_name, close_name, strlen(close_name));
-        existing->close_name[strlen(close_name)] = '\0';
+        return 0;
     }
-    existing->function      = function;
-    existing->named_context = named_context;
+
+    new = tagplist_init();
+
+    new->function      = function;
+    new->named_context = named_context;
+
+    new->open_name = (char *)malloc(strlen(open_name) + 1);
+    strncpy(new->open_name, open_name, strlen(open_name));
+    new->open_name[strlen(open_name)] = '\0';
+
+    new->close_name = (char *)malloc(strlen(close_name) + 1);
+    strncpy(new->close_name, close_name, strlen(close_name));
+    new->close_name[strlen(close_name)] = '\0';
+
+    new->next = *tag_pair_list;
+
+    *tag_pair_list = new;
 
     return 1;
 }

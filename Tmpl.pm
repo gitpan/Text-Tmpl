@@ -10,7 +10,7 @@ use constant TEMPLATE_DEBUG_LOTS => 2;
 use constant TEMPLATE_TRUE  => '1';
 use constant TEMPLATE_FALSE => '0';
 
-$VERSION = '0.14';
+$VERSION = '0.15';
 
 use Exporter;
 

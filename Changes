@@ -1,3 +1,18 @@
+0.15	- bugfix and feature release
+	- fixed template.c problem with systems which don't define MAXPATHLEN
+	  (Artur.Silveira@rezo.com)
+	- added t/3_huge_input.t to test large string input to some functions
+	- added t/3_long_lists.t to test adding tons of variables to a
+	  context, and tons of loop iterations
+	- simplified the logic of adding to certain linked list structures
+	- fixed warnings from Tmpl.xs
+	- removed '-g' flag from default compiler flags (you can always add it 
+	  back if you need it...) (Artur.Silveira@rezo.com)
+	- tidied up the code in Tmpl.xs a bit
+	- tidied up the code in typemap a bit
+	- Minor changes to typemap and Tmpl.xs to better support subclassing.
+	- Added t/3_subclass tests for the correct behavior of subclassed
+	  packages of Text::Tmpl.
 0.14	- bugfix and feature release
 	- Cleaned up the perl_tags.c code a little.
 	- Moved tag delimiters into context-specific variables.  (No more

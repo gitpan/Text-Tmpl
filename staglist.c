@@ -91,12 +91,12 @@ staglist_destroy(staglist_p simple_tag_list)
  * BUGS:          Hopefully none.
  * ==================================================================== */
 int
-staglist_alias(staglist_p simple_tag_list, char *old_name, char *new_name)
+staglist_alias(staglist_p *simple_tag_list, char *old_name, char *new_name)
 {
-    staglist_p current  = simple_tag_list;
+    staglist_p current  = *simple_tag_list;
 
     /* Make sure the simple tag list isn't NULL */
-    if (simple_tag_list == NULL)
+    if (*simple_tag_list == NULL)
     {
         return 0;
     }
@@ -117,6 +117,7 @@ staglist_alias(staglist_p simple_tag_list, char *old_name, char *new_name)
         }
         current = current->next;
     }
+
     return 0;
 }
 
@@ -132,13 +133,10 @@ staglist_alias(staglist_p simple_tag_list, char *old_name, char *new_name)
  * BUGS:          Hopefully none.
  * ==================================================================== */
 int
-staglist_register(staglist_p simple_tag_list, char *name,
+staglist_register(staglist_p *simple_tag_list, char *name,
                   void (*function)(context_p, char **, int, char**))
 {
-    staglist_p current  = simple_tag_list;
-    staglist_p existing = NULL;
-    staglist_p last     = NULL;
-
+    staglist_p new = NULL;
 
     /* Make sure the function isn't NULL */
     if (function == NULL)
@@ -146,45 +144,33 @@ staglist_register(staglist_p simple_tag_list, char *name,
         return 0;
     }
 
-    /* Make sure the pointer passed in wasn't NULL */
-    if (simple_tag_list == NULL)
+    /* Make sure the name isn't NULL */
+    if (name == NULL)
     {
         return 0;
     }
 
-    /* Walk through the whole list, marking any pre-existing tag of
-       this name, and marking the last element in the list */
-    while (current != NULL)
+    /* Make sure the pointer passed in wasn't NULL */
+    if (*simple_tag_list == NULL)
     {
-        if ((current->name != NULL) && (strcmp(current->name, name) == 0))
-        {
-            existing = current;
-        }
-        last    = current;
-        current = current->next;
+        return 0;
     }
 
-    /* If the tag doesn't already exist, we may have to create a new list
-       element */
-    if (existing == NULL)
+    new = staglist_init();
+    if (new == NULL)
     {
-        if (last->function == NULL)
-        {
-            existing   = last;
-        } else {
-            last->next = staglist_init();
-            existing   = last->next;
-
-            if (existing == NULL)
-            {
-                return 0;
-            }
-        }
-        existing->name = (char *)malloc(strlen(name) + 1);
-        strncpy(existing->name, name, strlen(name));
-        existing->name[strlen(name)] = '\0';
+        return 0;
     }
-    existing->function = function;
+
+    new->function = function;
+
+    new->name = (char *)malloc(strlen(name) + 1);
+    strncpy(new->name, name, strlen(name));
+    new->name[strlen(name)] = '\0';
+
+    new->next = *simple_tag_list;
+
+    *simple_tag_list = new;
 
     return 1;
 }

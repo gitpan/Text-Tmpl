@@ -25,7 +25,7 @@ extern "C" {
 nclist_p         nclist_init(void);
 void             nclist_destroy(nclist_p named_context_list);
 context_p        nclist_get_context(nclist_p named_context_list, char *name);
-int              nclist_new_context(nclist_p named_context_list, char *name);
+int              nclist_new_context(nclist_p *named_context_list, char *name);
 
 #ifdef __cplusplus
 }

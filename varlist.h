@@ -22,7 +22,7 @@ extern "C" {
 varlist_p varlist_init(void);
 void      varlist_destroy(varlist_p variable_list);
 char *    varlist_get_value(varlist_p variable_list, char *name);
-int       varlist_set_value(varlist_p variable_list, char *name, char *value);
+int       varlist_set_value(varlist_p *variable_list, char *name, char *value);
 
 #ifdef __cplusplus
 }

@@ -135,43 +135,40 @@ nclist_get_context(nclist_p named_context_list, char *name)
  * BUGS:          Hopefully none.
  * ==================================================================== */
 int
-nclist_new_context(nclist_p named_context_list, char *name)
+nclist_new_context(nclist_p *named_context_list, char *name)
 {
-    nclist_p current  = named_context_list;
-    nclist_p last     = NULL;
-
+    nclist_p new = NULL;
      
     if (named_context_list == NULL)
     {
         return 0;
     }
 
-    while (current != NULL)
+    if (name == NULL)
     {
-        if ((current->name != NULL) && (strcmp(current->name, name) == 0))
-        {
-            return 0;
-        }
-        last    = current;
-        current = current->next;
+        return 0;
     }
 
-    if (last->context == NULL)
+    new = nclist_init();
+    if (new == NULL)
     {
-        current = last;
-    } else {
-        last->next = nclist_init();
-        current    = last->next;
-
-        if (current == NULL)
-        {
-            return 0;
-        }
+        return 0;
     }
-    current->name = (char *)malloc(strlen(name) + 1);
-    strncpy(current->name, name, strlen(name));
-    current->name[strlen(name)] = '\0';
-    current->context = context_init();
+
+    new->context = context_init();
+    if (new->context == NULL)
+    {
+        free(new);
+        return 0;
+    }
+
+    new->name = (char *)malloc(strlen(name) + 1);
+    strncpy(new->name, name, strlen(name));
+    new->name[strlen(name)] = '\0';
+
+    new->next = *named_context_list;
+
+    *named_context_list = new;
 
     return 1;
 }
