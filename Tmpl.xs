@@ -50,7 +50,7 @@ template_loop_iteration(ctx, loop_name)
 char *
 template_parse_file(ctx, template_filename)
 	context_p	ctx
-	char *	template_filename
+	char *		template_filename
         PREINIT:
 		char **output = (char **)calloc(1, sizeof(char **));
 	CODE:
@@ -62,12 +62,12 @@ template_parse_file(ctx, template_filename)
 char *
 template_parse_string(ctx, template)
 	context_p	ctx
-	char *	template
+	char *		template
 	PREINIT:
-		char **output;
+		char *output = NULL;
 	CODE:
-		template_parse_string(ctx, template, output);
-		RETVAL = *output;
+		template_parse_string(ctx, template, &output);
+		RETVAL = output;
 	OUTPUT:
 		RETVAL
 

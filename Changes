@@ -1,3 +1,6 @@
+0.06	- bugfix release
+	- fixed a bug in Tmpl.xs, which may have been the root of all these
+	  optimizer woes.
 0.05	- compatibility fix release
 	- added some casts to avoid compiler warnings on solaris.
 	- gcc bug on solaris.  Added hints/solaris.pl as workaround.
