@@ -136,7 +136,7 @@ parser(context_p ctx, int looping, char *input, char **output)
                                    open_tag_argc, open_tag_argv))
                     && (result != NULL))
                 {
-                    char *parsed_result;
+                    char *parsed_result = NULL;
 
                     parser(current, 0, result, &parsed_result);
 
@@ -212,7 +212,7 @@ parser(context_p ctx, int looping, char *input, char **output)
                                                    open_tag_argv);
                         if (newcontext != NULL)
                         {
-                            char *parsed_region;
+                            char *parsed_region = NULL;
 
                             parser(newcontext, 1, region, &parsed_region);
                             append_output(output, parsed_region,
@@ -361,7 +361,6 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
     char instring, last;
     int  index, cursize, i;
 
-
     i       = 0;
     index   = 0;
     cursize = (size * 2) + 1;
@@ -410,7 +409,8 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
                 varvalue = context_get_value(ctx, varname);
                 if (varvalue != NULL)
                 {
-                    while ((index + strlen(varvalue) + 1) > cursize)
+                    length = strlen(varvalue);
+                    while ((index + length + 1) > cursize)
                     {
                         char *t;
 
@@ -422,7 +422,6 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
                         *outarg = t;
                     }
 
-                    length = strlen(varvalue);
                     strncat(&((*outarg)[index]), varvalue, length);
                     index += length - 1;
                     --p;
@@ -481,23 +480,26 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
 void
 append_output(char **output, char *append, int append_size, int *current_size)
 {
-    while ((strlen(*output) + append_size + 1) > *current_size) {
+    int length = strlen(*output);
+    while ((length + append_size + 1) > *current_size) {
         char *temp;
 
-        if ((strlen(*output) + append_size + 1) > ((*current_size) * 2))
+        if ((length + append_size + 1) > ((*current_size) * 2))
         {
-            *current_size = (strlen(*output) + append_size + 1);
+            *current_size = (length + append_size + 1);
         } else
         {
             *current_size = (*current_size) * 2;
         }
         temp = (char *)malloc(*current_size);
-        strncpy(temp, *output, strlen(*output));
+
+        strncpy(temp, *output, length);
+        temp[length] = '\0';
 
         free(*output);
         *output = temp;
     }
 
     strncat(*output, append, append_size);
-    strncat(*output, "\0", 1);
+    (*output)[length + append_size] = '\0';
 }

@@ -1,3 +1,7 @@
+0.18	- bugfix release
+	- added additional tests for large input problems
+	- fixed a bug (introduced in 0.17) with variables larger than 1024
+	  bytes, under certain circumstances (ak@dasburo.de)
 0.17	- bugfix and feature release
 	- moved some constant strings into #defines where they belonged
 	- moved the placeholder debugging code into the new 'flags', and

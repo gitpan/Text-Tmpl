@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA $AUTOLOAD @EXPORT_OK);
 use constant TEMPLATE_TRUE  => '1';
 use constant TEMPLATE_FALSE => '0';
 
-$VERSION = '0.17';
+$VERSION = '0.18';
 
 use Exporter;
 

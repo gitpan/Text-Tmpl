@@ -83,4 +83,6 @@ t/3_subclass.tmpl
 t/3_subclass.comp
 t/3_long_lists.t
 t/3_huge_input.t
+t/3_huge_input.tmpl
+t/3_huge_input.comp
 t/3_deep_nesting.t
