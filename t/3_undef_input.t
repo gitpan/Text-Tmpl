@@ -1,11 +1,11 @@
 use strict;
 
-BEGIN { $^W = 1; $| = 1; print "1..8\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..10\n"; }
 
 use Text::Tmpl;
 
 my($return, $subcontext);
-my $context = Text::Tmpl::init();
+my $context = new Text::Tmpl;
 
 $return = Text::Tmpl::set_delimiters(undef, undef);
 if ($return) {
@@ -56,9 +56,23 @@ if ($return) {
     print "ok 7\n";
 }
 
-$subcontext = $context->loop_iteration(undef);
-if (defined $subcontext) {
+$return = $context->set_values(undef);
+if ($return) {
     print "not ok 8\n";
 } else {
     print "ok 8\n";
+}
+
+$return = $context->set_values({ 'key' => undef });
+if (! $return) {
+    print "not ok 9\n";
+} else {
+    print "ok 9\n";
+}
+
+$subcontext = $context->loop_iteration(undef);
+if (defined $subcontext) {
+    print "not ok 10\n";
+} else {
+    print "ok 10\n";
 }

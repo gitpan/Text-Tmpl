@@ -1,8 +1,7 @@
 package Text::Tmpl;
 
 use strict;
-use Carp;
-use vars qw($VERSION @ISA $AUTOLOAD);
+use vars qw($VERSION @ISA $AUTOLOAD @EXPORT_OK);
 
 use constant TEMPLATE_DEBUG_NONE => 0;
 use constant TEMPLATE_DEBUG_SOME => 1;
@@ -11,14 +10,50 @@ use constant TEMPLATE_DEBUG_LOTS => 2;
 use constant TEMPLATE_TRUE  => "1";
 use constant TEMPLATE_FALSE => "0";
 
+$VERSION = '0.13';
+
+use Exporter;
+
 require DynaLoader;
 require AutoLoader;
 
-@ISA = qw(DynaLoader);
+@ISA = qw(DynaLoader Exporter);
 
-$VERSION = '0.12';
+@EXPORT_OK = qw(set_delimiters
+                register_simple
+                register_pair
+                TEMPLATE_DEBUG_NONE
+                TEMPLATE_DEBUG_SOME
+                TEMPLATE_DEBUG_LOTS
+                TEMPLATE_TRUE
+                TEMPLATE_FALSE);
 
 bootstrap Text::Tmpl $VERSION;
+
+
+###############################################################################
+## new
+##   Purpose:
+##     Provide a more familiar constructor for OO Perl people
+##   Usage:
+##     $context = new Text::Tmpl;
+##   Return Values:
+##     Returns a context object (as created by Text::Tmpl::init()
+###############################################################################
+sub new {
+    my $class = shift || return undef;
+
+    $class = ref($class) || $class;
+
+    my $self = Text::Tmpl::init();
+    if (! $self) {
+        return undef;
+    }
+
+    bless($self, $class);
+    return $self;
+}
+### end new ###################################################################
 
 ###############################################################################
 ## set_values
@@ -41,7 +76,10 @@ sub set_values {
     }
 
     foreach my $key (keys %{$hashref}) {
-        my $ret = $self->set_value($key, $hashref->{$key});
+        my $ret = 1;
+        if (defined $hashref->{$key}) {
+            $ret = $self->set_value($key, $hashref->{$key});
+        }
         if (! $ret) {
             return 0;
         }
@@ -62,7 +100,7 @@ Text::Tmpl - Templating system perl library
 
 B<use Text::Tmpl;>
 
-$context    = B<Text::Tmpl::init>();
+$context    = B<new Text::Tmpl>;
 
 $return     = B<Text::Tmpl::set_delimiters>($opentag,
                  $closetag);
@@ -111,7 +149,7 @@ Each function is described below:
 
 =over 3
 
-=item B<Text::Tmpl::init>
+=item B<Text::Tmpl::new>
 
 This function initializes the library.  It allocates and returns the "global"
 context structure, and also configures all of the default tag behavior.
@@ -178,7 +216,7 @@ for the gory details.
 
 This function blows away all of the memory allocated within the given context.
 You should really *only* call this on the context returned by
-Text::Tmpl::init, and only at the end of your code.
+'new Text::Tmpl', and only at the end of your code.
 
 =back
 

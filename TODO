@@ -1,4 +1,7 @@
 Stuff that may make it into future versions (patches welcome!)
+ . Make sure that Text::Tmpl can safely be subclassed
+ . Possibly add method call versions of set_delimiters, register_simple and
+   register_pair?
  . Port to win32?
  . Consistent, clean error reporting (something errno-like)
  . Make the parser more technically "correct" (i.e. single-pass, stack based

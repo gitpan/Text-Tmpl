@@ -10,7 +10,7 @@ use constant COMPARE  => 't/2_ext_pair.comp';
 
 my($compare, $output);
 
-my $context = Text::Tmpl::init();
+my $context = new Text::Tmpl;
 if (! defined $context) {
     print "not ok 1\n";
     exit(0);

@@ -306,11 +306,19 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
 
     if (stat(template_filename, &finfo) != 0)
     {
-        int size = strlen(template_filename)
-                 + strlen(context_get_value(ctx, "INTERNAL_dir")) + 1;
+        char *dir = context_get_value(ctx, "INTERNAL_dir");
+        int size  = strlen(template_filename) + strlen(dir) + 2;
+
         real_filename = (char *)malloc(size);
-        snprintf(real_filename, size, "%s%s",
-                 context_get_value(ctx, "INTERNAL_dir"), template_filename);
+        if (dir[strlen(dir)] == '/')
+        {
+            snprintf(real_filename, size, "%s%s", dir, template_filename);
+        }
+        else
+        {
+            snprintf(real_filename, size, "%s/%s", dir, template_filename);
+        }
+
         if (stat(real_filename, &finfo) != 0)
         {
             free(real_filename);

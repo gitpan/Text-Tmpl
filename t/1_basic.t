@@ -1,7 +1,7 @@
 use strict;
 use vars qw($loaded);
 
-BEGIN { $^W = 1; $| = 1; print "1..22\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..23\n"; }
 
 use Text::Tmpl;
 
@@ -126,35 +126,40 @@ if (! defined $subcontext) {
 Text::Tmpl::destroy($context);
 print "ok 17\n";
 
-$context = Text::Tmpl::init();
-
-$output = Text::Tmpl::parse_file($context, TEMPLATE);
-if (! defined($output)) {
+$context = new Text::Tmpl;
+if (! defined($context)) {
     print "not ok 18\n";
 } else {
     print "ok 18\n";
 }
 
-$output = $context->parse_file(TEMPLATE);
+$output = Text::Tmpl::parse_file($context, TEMPLATE);
 if (! defined($output)) {
     print "not ok 19\n";
 } else {
     print "ok 19\n";
 }
 
-$output = Text::Tmpl::parse_string($context, "this is not a test");
+$output = $context->parse_file(TEMPLATE);
 if (! defined($output)) {
     print "not ok 20\n";
 } else {
     print "ok 20\n";
 }
 
-$output = $context->parse_string("this is not a test");
+$output = Text::Tmpl::parse_string($context, "this is not a test");
 if (! defined($output)) {
     print "not ok 21\n";
 } else {
     print "ok 21\n";
 }
 
+$output = $context->parse_string("this is not a test");
+if (! defined($output)) {
+    print "not ok 22\n";
+} else {
+    print "ok 22\n";
+}
+
 $context->destroy();
-print "ok 22\n";
+print "ok 23\n";

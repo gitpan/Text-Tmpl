@@ -4,7 +4,7 @@ BEGIN { $^W = 1; $| = 1; print "1..3\n"; }
 
 use Text::Tmpl;
 
-my $context = Text::Tmpl::init();
+my $context = new Text::Tmpl;
 
 my $output = $context->parse_file('nonexistent.tmpl');
 if (defined $output) {

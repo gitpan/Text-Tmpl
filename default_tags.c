@@ -183,11 +183,18 @@ simple_tag_include(context_p ctx, char **output, int argc, char **argv)
 
     if (stat(argv[1], &finfo) != 0)
     {
-        int size = strlen(argv[1])
-                 + strlen(context_get_value(ctx, "INTERNAL_dir")) + 1;
+        char *dir = context_get_value(ctx, "INTERNAL_dir");
+        int size  = strlen(argv[1]) + strlen(dir) + 2;
+
         filename = (char *)malloc(size);
-        snprintf(filename, size, "%s%s",
-                 context_get_value(ctx, "INTERNAL_dir"), argv[1]);
+        if (dir[strlen(dir)] == '/')
+        {
+            snprintf(filename, size, "%s%s", dir, argv[1]);
+        }
+        else
+        {
+            snprintf(filename, size, "%s/%s", dir, argv[1]);
+        }
 
         if (stat(filename, &finfo) != 0)
         {

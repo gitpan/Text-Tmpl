@@ -1,6 +1,7 @@
 MANIFEST
 README
 TODO
+CREDITS
 Changes
 Makefile.PL
 Tmpl.pm
@@ -29,6 +30,7 @@ varlist.h
 t/0_use.t
 t/1_basic.t
 t/1_basic.tmpl
+t/1_exporter.t
 t/2_tag_whitespace.t
 t/2_tag_whitespace.tmpl
 t/2_tag_whitespace.comp
