@@ -1,6 +1,8 @@
 TYPEMAP
 context_p				T_CONTEXT
 CV *					T_CODEREF
+char *					T_CHARSTAR
+int					T_INT
 
 INPUT
 T_CONTEXT
@@ -11,13 +13,33 @@ T_CONTEXT
 		XSRETURN_UNDEF;
 	}
 T_CODEREF
+	if ($arg == &sv_undef) {
+		ST(0) = sv_2mortal(newSViv(0));
+		XSRETURN(1);
+	}
 	if (SvTYPE(SvRV($arg)) == SVt_PVCV)
 		$var = (CV*)SvRV($arg);
 	else
 		croak(\"$var is not a code reference\")
+T_CHARSTAR
+	if ($arg == &sv_undef) {
+		ST(0) = sv_2mortal(newSViv(0));
+		XSRETURN(1);
+	}
+	$var = (char *)SvPV($arg, na);
+T_INT
+	if ($arg == &sv_undef) {
+		ST(0) = sv_2mortal(newSViv(0));
+		XSRETURN(1);
+	}
+	$var = (int)SvIV($arg);
 
 OUTPUT
 T_CODEREF
 	$arg = newRV((SV*)$var);
 T_CONTEXT
 	sv_setref_pv($arg, "Text::Tmpl", (void*)$var);
+T_CHARSTAR
+	sv_setpv((SV *)$arg, $var);
+T_INT
+	sv_setiv($arg, (IV)$var);

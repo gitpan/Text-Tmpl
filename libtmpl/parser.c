@@ -431,7 +431,13 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
         {
             char *t;
 
-            cursize = cursize * 2;
+            if ((index + 1) >= (cursize * 2))
+            {
+                cursize = index + 1;
+            } else
+            {
+                cursize = cursize * 2;
+            }
             t = (char *)calloc(1, cursize);
             strncpy(t, *outarg, index);
 
@@ -460,7 +466,13 @@ append_output(char **output, char *append, int append_size, int *current_size)
     while ((strlen(*output) + append_size + 1) > *current_size) {
         char *temp;
 
-        *current_size = (*current_size) * 2;
+        if ((strlen(*output) + append_size + 1) > ((*current_size) * 2))
+        {
+            *current_size = (strlen(*output) + append_size + 1);
+        } else
+        {
+            *current_size = (*current_size) * 2;
+        }
         temp = (char *)calloc(1, *current_size);
         strncpy(temp, *output, strlen(*output));
 

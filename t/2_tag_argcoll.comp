@@ -1,0 +1,5 @@
+collating constant strings:  value0
+constant string with quotes: "value0"
+single variable:             value1
+two variables:               value1value2
+variables + constants:       var1=value1 var2=value2

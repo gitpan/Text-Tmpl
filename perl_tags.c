@@ -52,6 +52,7 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     PUSHMARK(sp);
     /* first the context */
     sv_setref_pv(perlcontext, "context_p", (void *)ctx);
+    sv_bless(perlcontext, gv_stashpv(TEMPLATE_PACKAGE, 0));
     XPUSHs(perlcontext);
     for (i = 0; i <= argc; i++)
     {
@@ -118,6 +119,7 @@ perl_tag_pair(context_p ctx, int argc, char **argv)
     PUSHMARK(sp);
     /* first the context */
     sv_setref_pv(perlcontext, "context_p", (void *)ctx);
+    sv_bless(perlcontext, gv_stashpv(TEMPLATE_PACKAGE, 0));
     XPUSHs(perlcontext);
     for (i = 0; i <= argc; i++)
     {

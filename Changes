@@ -1,3 +1,14 @@
+0.10	- interim release
+	- updated README file
+	- changed the memory allocation scheme used by the parser so that
+          it is more efficient with large variable values and templates
+	- made perl_simple_tag and perl_tag_pair bless the contexts
+	  they pass into the underlying perl functions they call
+	- added documentation for set_values()
+	- added set_values() method
+	- updated the documentation a bit
+	- moved tests into t/*.t format & started adding more tests
+	- made XS code & typemap more robust in the face of undef input
 0.09	- bugfix release
 	- fixed a bunch of memory leaks in the underlying C library
 	- updated README file

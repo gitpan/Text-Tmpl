@@ -37,13 +37,17 @@ Installing
   # make test
   # make install
 
+The C library is not installed by default.  If you want to use it, you can
+install it by hand - simply copy libtmpl.a and *.h from the libtmpl
+subdirectory into the appropriate places on your system.
+
 Additional Information
 
 There is a web page for Text::Tmpl at http://pootpoot.com/~dlowe/Text-Tmpl/
 The latest version can always be found there.
 
-You can my directly at dlowe@pootpoot.com.  I'm happy to answer any questions
-you might have.
+You can contact me directly at dlowe@pootpoot.com.  I'm happy to answer any
+questions you might have.
 
 If there's enough demand, I will create a mailing list for discussion/support.
 Let me know if this interests you.

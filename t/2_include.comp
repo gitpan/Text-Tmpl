@@ -1,0 +1,5 @@
+real template:        constant string:      poot
+existing variable:    value1
+nonexistent variable: 
+
+nonexistent template: 

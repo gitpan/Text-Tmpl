@@ -3,6 +3,7 @@
 #ifndef __PERL_TAGS_H
 #define __PERL_TAGS_H
 
+#define TEMPLATE_PACKAGE          "Text::Tmpl"
 #define PERL_TAGS_SIMPLE_TAG_HASH "Text::Tmpl::simple_tags"
 #define PERL_TAGS_TAG_PAIR_HASH   "Text::Tmpl::tag_pairs"
 

@@ -16,9 +16,39 @@ require AutoLoader;
 
 @ISA = qw(DynaLoader);
 
-$VERSION = '0.09';
+$VERSION = '0.10';
 
 bootstrap Text::Tmpl $VERSION;
+
+###############################################################################
+## set_values
+##   Purpose:
+##     Load a hash table into a template
+##   Usage:
+##     $context->set_values({ 'var1' => 'value1',
+##                            'var2' => 'value2' });
+##   Return Values:
+##     Returns 1 on success, 0 on failure.
+###############################################################################
+sub set_values {
+    my $self = shift;
+    if (! ref $self) {
+        return 0;
+    }
+    my($hashref) = shift;
+    if ((ref $hashref) ne 'HASH') {
+        return 0;
+    }
+
+    foreach my $key (keys %{$hashref}) {
+        my $ret = $self->set_value($key, $hashref->{$key});
+        if (! $ret) {
+            return 0;
+        }
+    }
+    return 1;
+}
+### end set_values ############################################################
 
 1;
 
@@ -50,6 +80,8 @@ $return     = $context->B<set_strip>($to_strip_or_not_to);
 $return     = $context->B<set_dir>($directory);
 
 $return     = $context->B<set_value>($name, $value);
+
+$return     = $context->B<set_values>($hashref);
 
 $subcontext = $context->B<loop_iteration>($loop_name);
 
@@ -95,6 +127,11 @@ limit of 6 characters on these strings.
 =item B<Text::Tmpl::set_value>
 
 This function stores the name=value pair in the current context.
+
+=item B<Text::Tmpl::set_values>
+
+This function dumps the name=value pairs from a hash reference into the
+current context.
 
 =item B<Text::Tmpl::set_debug>
 
@@ -155,8 +192,7 @@ they fail, or a valid pointer otherwise.
 
 =head1 BUGS
 
-Got the OO-style notation to work, but not for all functions (the others
-still cause nasty core dumps).
+Hopefully none.
 
 =head1 AUTHOR
 
