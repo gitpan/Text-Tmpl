@@ -3,7 +3,7 @@
 use strict;
 use vars qw($loaded);
 
-BEGIN { $^W = 1; $| = 1; print "1..8\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..9\n"; }
 END   {print "not ok 1\n" unless $loaded;}
 use Text::Tmpl;
 $loaded = 1;
@@ -52,5 +52,14 @@ if ($output ne 'bar') {
     print "ok 7\n";
 }
 
+undef $output;
+
+$output = $context->parse_file('nonexistent.tmpl');
+if (defined($output)) {
+    print "not ok 8\n";
+} else {
+    print "ok 8\n";
+}
+
 Text::Tmpl::destroy($context);
-print "ok 8\n";
+print "ok 9\n";

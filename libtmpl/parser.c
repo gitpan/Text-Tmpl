@@ -179,8 +179,6 @@ parser(context_p ctx, int looping, char *input, char **output)
                     {
                         --depth;
                     }
-                    free(close_tag_name);
-
 
                     /* if depth is zero, this close tag is *the* close tag. */
                     if (depth == 0)
@@ -204,11 +202,21 @@ parser(context_p ctx, int looping, char *input, char **output)
                                           strlen(parsed_region), &output_size);
                             free(parsed_region);
 
+                            if (newcontext->anonymous)
+                            {
+                                context_destroy(newcontext);
+                            }
+
+                            free(close_tag_name);
+                            free(region);
+
                             break;
                         }
 
                         free(region);
                     }
+
+                    free(close_tag_name);
                 }
                 position = subpos;
             }
@@ -217,6 +225,7 @@ parser(context_p ctx, int looping, char *input, char **output)
             {
                 free(open_tag_argv[i]);
             }
+            free(open_tag_argv);
             free(open_tag);
         }
 

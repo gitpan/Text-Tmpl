@@ -16,7 +16,7 @@ require AutoLoader;
 
 @ISA = qw(DynaLoader);
 
-$VERSION = '0.07';
+$VERSION = '0.09';
 
 bootstrap Text::Tmpl $VERSION;
 

@@ -9,7 +9,7 @@ templating modules on CPAN, each only a tiny bit different from the
 others. This one is no different - what sets it aside is speed. The
 entire module is implemented as a C library, with only a thin XS/Perl
 layer to make the calls available from Perl. The same templates, then,
-can be used from either Perl or C programs.
+can be used from either Perl or C/C++ programs.
 
 This was originally designed to completely isolate HTML programmers
 from module/CGI programmers, or at least completely separate logic
@@ -34,4 +34,16 @@ Building
 
 Installing
 
+  # make test
   # make install
+
+Additional Information
+
+There is a web page for Text::Tmpl at http://pootpoot.com/~dlowe/Text-Tmpl/
+The latest version can always be found there.
+
+You can my directly at dlowe@pootpoot.com.  I'm happy to answer any questions
+you might have.
+
+If there's enough demand, I will create a mailing list for discussion/support.
+Let me know if this interests you.

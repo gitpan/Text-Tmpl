@@ -24,6 +24,9 @@ struct context_struct
 
     /* boolean value - should the contents of this context be output? */
     char      output_contents;
+
+    /* boolean value - is this context anonymous? */
+    char      anonymous;
 };
 
 #ifdef __cplusplus

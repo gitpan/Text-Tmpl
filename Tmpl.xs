@@ -55,8 +55,13 @@ template_parse_file(ctx, template_filename)
 		char *output = NULL;
 	CODE:
 		template_parse_file(ctx, template_filename, &output);
-                RETVAL = newSVpv(output, strlen(output));
-                free(output);
+                if (output != NULL) {
+                    RETVAL = newSVpv(output, strlen(output));
+                    free(output);
+                } else {
+                    ST(0) = &sv_undef;
+                    XSRETURN(1);
+                }
 	OUTPUT:
 		RETVAL
 
@@ -68,8 +73,13 @@ template_parse_string(ctx, template)
 		char *output = NULL;
 	CODE:
 		template_parse_string(ctx, template, &output);
-                RETVAL = newSVpv(output, strlen(output));
-                free(output);
+                if (output != NULL) {
+                    RETVAL = newSVpv(output, strlen(output));
+                    free(output);
+                } else {
+                    ST(0) = &sv_undef;
+                    XSRETURN(1);
+                }
 	OUTPUT:
 		RETVAL
 

@@ -1,0 +1,11 @@
+Stuff that may make it into future versions (patches welcome!)
+ . Complete testing during "make test" of all code paths
+ . Consistent, clean error reporting (something errno-like)
+ . Make the parser more technically "correct" (i.e. single-pass, stack based
+   parsing)
+ . Fix the memory allocation to better handle large variable contents during
+   parsing (it is currently correct, but a tad slow, for large variables)
+ . Turn the linked lists used for contexts, varlists and nclists into some
+   type of structure that is more efficient for large numbers of members
+ . Make sure that all C structures are completely opaque
+ . Make sure that all C functions have perl wrappers

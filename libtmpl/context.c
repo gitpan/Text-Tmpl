@@ -48,7 +48,7 @@ context_init(void)
     ctx->named_child_contexts = nclist_init();
     if (ctx->named_child_contexts == NULL)
     {
-        free(ctx->variables);
+        varlist_destroy(ctx->variables);
         free(ctx);
         return NULL;
     }
@@ -56,6 +56,7 @@ context_init(void)
     ctx->parent_context  = NULL;
     ctx->next_context    = NULL;
     ctx->output_contents = 1;
+    ctx->anonymous       = 0;
 
     return(ctx);
 }
@@ -192,6 +193,7 @@ context_get_anonymous_child(context_p ctx)
     }
 
     anonymous_ctx->parent_context = ctx;
+    anonymous_ctx->anonymous      = 1;
 
     return(anonymous_ctx);
 }
