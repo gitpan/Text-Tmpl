@@ -1,3 +1,9 @@
+0.21	- bugfix release
+	- fixed a severe bug which broke debugging output completely - the
+	  non-anonymous children of anonymous contexts were incorrectly
+	  inheriting the anonymous flag (gphan@sydney.daveb.net)
+	- removed extraneous memory allocation from context_init()
+	- added t/2_debug.* for minimal testing of the debugging tag pair.
 0.20	- bugfix release
 	- fixed a null termination bug in the parser (ak@dasburo.de)
 	- added t/3_relationships.t to test for bugs related to the size of

@@ -10,6 +10,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <template.h>
 
@@ -71,14 +72,15 @@ nclist_destroy(nclist_p named_context_list)
     if (named_context_list->context != NULL)
     {
         context_destroy(named_context_list->context);
+        named_context_list->context = NULL;
     }
 
-    named_context_list->next    = NULL;
     if (named_context_list->name != NULL)
     {
         free(named_context_list->name);
+        named_context_list->name = NULL;
     }
-    named_context_list->context = NULL;
+    named_context_list->next    = NULL;
     free(named_context_list);
 
     nclist_destroy(next);
@@ -134,12 +136,6 @@ nclist_new_context(nclist_p *named_context_list, char *name)
     nclist_p new = NULL;
     int length;
      
-    if (named_context_list == NULL)
-    {
-        template_errno = TMPL_ENULLARG;
-        return 0;
-    }
-
     if (name == NULL)
     {
         template_errno = TMPL_ENULLARG;

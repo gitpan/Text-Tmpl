@@ -9,6 +9,7 @@
  * ==================================================================== */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <template.h>
 
@@ -35,27 +36,14 @@ context_init(void)
         return NULL;
     }
 
-    ctx->variables = varlist_init();
-    if (ctx->variables == NULL)
-    {
-        free(ctx);
-        return NULL;
-    }
-
-    ctx->named_child_contexts = nclist_init();
-    if (ctx->named_child_contexts == NULL)
-    {
-        varlist_destroy(ctx->variables);
-        free(ctx);
-        return NULL;
-    }
-
-    ctx->simple_tags     = NULL;
-    ctx->tag_pairs       = NULL;
-    ctx->parent_context  = NULL;
-    ctx->next_context    = NULL;
-    ctx->last_context    = ctx;
-    ctx->flags           = CTX_FLAG_OUTPUT;
+    ctx->variables            = NULL;
+    ctx->named_child_contexts = NULL;
+    ctx->simple_tags          = NULL;
+    ctx->tag_pairs            = NULL;
+    ctx->parent_context       = NULL;
+    ctx->next_context         = NULL;
+    ctx->last_context         = ctx;
+    ctx->flags                = CTX_FLAG_OUTPUT;
 
     return(ctx);
 }
@@ -285,6 +273,7 @@ context_set_named_child(context_p ctx, char *name)
 
     named_ctx->parent_context = ctx;
     named_ctx->flags          = ctx->flags;
+    ctx_unset_anonymous(named_ctx);
 
     return 1;
 }
@@ -326,6 +315,7 @@ context_add_peer(context_p ctx)
     }
     peer_ctx->parent_context = ctx->parent_context;
     peer_ctx->flags          = ctx->flags;
+    ctx_unset_anonymous(peer_ctx);
 
     ctx->last_context->next_context = peer_ctx;
     ctx->last_context               = peer_ctx;

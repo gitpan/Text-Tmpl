@@ -136,13 +136,6 @@ varlist_set_value(varlist_p *variable_list, char *name, char *value)
     varlist_p new = NULL;
     int length;
 
-    /* Make sure that the pointer passed in wasn't NULL */
-    if (variable_list == NULL)
-    {
-        template_errno = TMPL_ENULLARG;
-        return 0;
-    }
-
     /* Make sure that the name and value aren't NULL */
     if ((name == NULL) || (value == NULL))
     {
