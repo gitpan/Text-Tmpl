@@ -1,6 +1,6 @@
 MANIFEST
-CHANGES
 README
+Changes
 Makefile.PL
 Tmpl.pm
 Tmpl.xs
@@ -11,6 +11,7 @@ libtmpl.pod
 template_syntax.pod
 template_extend.pod
 test.pl
+hints/solaris.pl
 libtmpl/Makefile
 libtmpl/context.c
 libtmpl/context.h

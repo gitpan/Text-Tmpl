@@ -1,5 +1,0 @@
-0.04	- compatibility fix release
-	- ExtUtils::MakeMaker will write a Makefile that is syntactically
-	  incorrect for gmake(1) if there are .pod files with '::' in them.
-	  Fixed.
-0.03	- first public release

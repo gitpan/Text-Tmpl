@@ -277,7 +277,7 @@ parse_tag(context_p ctx, char *tag, char **tagname, int *argc, char ***argv)
     argbegin  = NULL;
     for (p = (tag + length); *p != (char)NULL; last = *p, ++p)
     {
-        if ((! isspace(*p)) && (*argc == 0))
+        if ((! isspace((int)*p)) && (*argc == 0))
         {
             argbegin = p;
             (*argc)++;
@@ -342,7 +342,7 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
     *outarg = (char *)calloc(1, cursize);
 
     /* move past leading whitespace */
-    for (begin = inarg; isspace(*begin); ++begin, ++i) ;
+    for (begin = inarg; isspace((int)*begin); ++begin, ++i) ;
 
     instring = 0;
     last     = '\0';
@@ -374,7 +374,7 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
                 char *varname, *varvalue;
                 char *b = ++p;
 
-                for (++i; ((*p != (char)NULL) && (isalnum(*p) || (*p == '_') || (*p == '.'))); p++, i++) ;
+                for (++i; ((*p != (char)NULL) && (isalnum((int)*p) || (*p == '_') || (*p == '.'))); p++, i++) ;
 
                 length = p - b;
                 varname = (char *)malloc(length + 1);
