@@ -76,32 +76,36 @@ if (! defined $subcontext) {
     print "ok 5\n";
 }
 
-$return = $subcontext->set_value('bar', 'baz');
-if (! $return) {
+$subcontext = $context->fetch_loop_iteration('foo', 0);
+if (! defined $subcontext) {
     print "not ok 6\n";
 } else {
     print "ok 6\n";
 }
 
-$return = $subcontext->test_sub;
+$return = $subcontext->set_value('bar', 'baz');
 if (! $return) {
     print "not ok 7\n";
 } else {
     print "ok 7\n";
 }
 
-$output = $context->parse_file(TEMPLATE);
-if (! defined($output)) {
+$return = $subcontext->test_sub;
+if (! $return) {
     print "not ok 8\n";
 } else {
     print "ok 8\n";
 }
 
-if ($output ne $compare) {
+$output = $context->parse_file(TEMPLATE);
+if (! defined($output)) {
     print "not ok 9\n";
 } else {
     print "ok 9\n";
 }
 
-$context->destroy();
-print "ok 10\n";
+if ($output ne $compare) {
+    print "not ok 10\n";
+} else {
+    print "ok 10\n";
+}

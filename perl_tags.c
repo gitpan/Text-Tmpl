@@ -8,11 +8,12 @@
  *
  * ==================================================================== */
 
+#include <stdio.h>
+
 #include <EXTERN.h>
 #include <perl.h>
 #include <XSUB.h>
 
-#include <stdio.h>
 #include <context.h>
 
 #include "ppport.h"
@@ -35,6 +36,7 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     HV *perl_simple_tags = perl_get_hv(PERL_TAGS_SIMPLE_TAG_HASH, TRUE);
     SV **coderef         = NULL;
     SV *perlcontext      = sv_newmortal();
+    SV *tc               = sv_newmortal();
     context_p current    = ctx;
     int i, retval;
     char key[20];
@@ -51,8 +53,8 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
 
 
     /* Create and bless a perl version of the context */
-    sv_setref_pv(perlcontext, "context_p", (void *)ctx);
-    sv_bless(perlcontext, gv_stashpv(TEMPLATE_PACKAGE, 0));
+    sv_magic(tc, sv_2mortal(newSViv((I32)ctx)), '~', NULL, 0);
+    perlcontext = sv_bless(newRV(tc), gv_stashpv(TEMPLATE_PACKAGE, 0));
 
 
     /* Fetch a code reference out of the perl_simple_tags hash */
@@ -133,6 +135,7 @@ perl_tag_pair(context_p ctx, int argc, char **argv)
     HV *perl_tag_pairs = perl_get_hv(PERL_TAGS_TAG_PAIR_HASH, TRUE);
     SV **coderef       = NULL;
     SV *perlcontext    = sv_newmortal();
+    SV *tc             = sv_newmortal();
     context_p current  = ctx;
     int i;
     char key[20];
@@ -148,8 +151,8 @@ perl_tag_pair(context_p ctx, int argc, char **argv)
 
 
     /* Create and bless a perl version of the context */
-    sv_setref_pv(perlcontext, "context_p", (void *)ctx);
-    sv_bless(perlcontext, gv_stashpv(TEMPLATE_PACKAGE, 0));
+    sv_magic(tc, sv_2mortal(newSViv((I32)ctx)), '~', NULL, 0);
+    perlcontext = sv_bless(newRV(tc), gv_stashpv(TEMPLATE_PACKAGE, 0));
 
 
     /* Fetch a code reference out of the perl_tag_pairs hash */

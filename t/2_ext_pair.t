@@ -59,8 +59,6 @@ if ($output ne $compare) {
     print "ok 4\n";
 }
 
-Text::Tmpl::destroy($context);
-
 sub tag_pair_poot {
     my($context, $name, @args) = @_;
 

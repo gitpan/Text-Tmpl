@@ -26,7 +26,7 @@ if (! defined $comp_fh) {
     exit(0);
 }
 
-$context2->destroy();
+# $context2->destroy();
 
 {
     local $/ = undef;
@@ -45,5 +45,3 @@ if ($output ne $compare) {
 } else {
     print "ok 1\n";
 }
-
-Text::Tmpl::destroy($context);

@@ -88,5 +88,3 @@ if ($output ne $compare) {
 } else {
     print "ok 5\n";
 }
-
-$context->destroy();

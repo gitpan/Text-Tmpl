@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA $AUTOLOAD @EXPORT_OK);
 use constant TEMPLATE_TRUE  => '1';
 use constant TEMPLATE_FALSE => '0';
 
-$VERSION = '0.21';
+$VERSION = '0.22';
 
 use Exporter;
 
@@ -46,6 +46,21 @@ sub new {
 }
 ### end new ###################################################################
 
+
+###############################################################################
+## new
+##   Purpose:
+##     Backwards-compatibility with versions prior to 0.22 - don't use it!
+##   Usage:
+##     $template->destroy();
+##   Return Values:
+##     None
+###############################################################################
+sub destroy {
+    my $self = shift;
+    $self->DESTROY();
+}
+### end DESTROY ###############################################################
 
 
 ###############################################################################
@@ -126,8 +141,6 @@ $subcontext = $context->B<loop_iteration>($loop_name);
 $output     = $context->B<parse_file>($template_filename);
 
 $output     = $context->B<parse_string>($template);
-
-$context->B<destroy>();
 
 $errno      = Text::Tmpl::B<errno>();
 
@@ -225,12 +238,6 @@ $old_name, to also be called by $new_name.
 This function copies the definition of a tag pair, previously registered as
 $old_open_name/$old_close_name, to also be called by
 $new_open_name/$new_close_name.
-
-=item B<destroy>
-
-This function blows away all of the memory allocated within the given context.
-You should really B<only> call this on the context returned by
-'new Text::Tmpl', and only at the end of your code.
 
 =item B<errno>
 

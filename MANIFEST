@@ -52,6 +52,7 @@ t/2_comment.comp
 t/2_debug.t
 t/2_debug.tmpl
 t/2_debug_include.tmpl
+t/2_debug.comp
 t/2_echo.t
 t/2_echo.tmpl
 t/2_echo.comp

@@ -1,7 +1,7 @@
 use strict;
 use vars qw($loaded);
 
-BEGIN { $^W = 1; $| = 1; print "1..6\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..5\n"; }
 
 use Text::Tmpl;
 
@@ -48,6 +48,3 @@ if (($errno != 10) || ($errstr ne 'unable to parse')) {
 } else {
     print "ok 5\n";
 }
-
-$context->destroy();
-print "ok 6\n";

@@ -1,7 +1,7 @@
 use strict;
 use vars qw($loaded);
 
-BEGIN { $^W = 1; $| = 1; print "1..4\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..3\n"; }
  
 use Text::Tmpl qw(TEMPLATE_TRUE
                   TEMPLATE_FALSE);
@@ -27,6 +27,3 @@ if (! $return) {
 } else {
     print "ok 3\n";
 }
-
-$context->destroy();
-print "ok 4\n";

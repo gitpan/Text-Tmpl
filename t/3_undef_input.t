@@ -1,6 +1,6 @@
 use strict;
 
-BEGIN { $^W = 1; $| = 1; print "1..12\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..13\n"; }
 
 use Text::Tmpl;
 
@@ -91,4 +91,9 @@ if ($return) {
     print "ok 12\n"
 }
 
-$context->destroy();
+$subcontext = $context->fetch_loop_iteration(undef, undef);
+if (defined $subcontext) {
+    print "not ok 13\n";
+} else {
+    print "ok 13\n";
+}

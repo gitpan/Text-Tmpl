@@ -279,6 +279,48 @@ template_loop_iteration(context_p ctx, char *loop_name)
 
 
 /* ====================================================================
+ * NAME:          template_fetch_loop_iteration
+ *
+ * DESCRIPTION:   This function returns a loop iteration context by
+ *                name and number from the given context, if it exists.
+ *
+ * RETURN VALUES: Returns an existing context, or NULL if there isn't
+ *                one.
+ *
+ * BUGS:          Hopefully none.
+ * ==================================================================== */
+context_p
+template_fetch_loop_iteration(context_p ctx, char *loop_name, int iteration)
+{
+    context_p named_child, current;
+    int curi;
+
+    named_child = context_get_named_child(ctx, loop_name);
+    if (named_child == NULL)
+    {
+        return NULL;
+    }
+
+    curi    = 0;
+    current = named_child;
+    while ((curi < iteration) && (current->next_context != NULL))
+    {
+        ++curi;
+        current = current->next_context;
+    }
+
+    if (curi == iteration)
+    {
+        return current;
+    } else {
+        template_errno = TMPL_ENOCTX;
+        return NULL;
+    }
+}
+
+
+
+/* ====================================================================
  * NAME:          string_truth
  *     
  * DESCRIPTION:   Decides whether an input string is "true" or not.

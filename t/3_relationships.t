@@ -24,13 +24,9 @@ foreach my $varnamesize ( 1 .. MAXVARNAMESIZE ) {
 
     if ($output ne 'v' x numo(MAXCONTENTSIZE)) {
         print "not ok $varnamesize\n";
-        print STDERR "varnamesize = $varnamesize\n";
-        print STDERR "$output\n";
     } else {
         print "ok $varnamesize\n";
     }
-
-    $ctx->destroy();
 }
 
 sub numo {

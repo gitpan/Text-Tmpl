@@ -8,8 +8,14 @@ INPUT
 T_CONTEXT
 	if (sv_isobject($arg) && (SvTYPE(SvRV($arg)) == SVt_PVMG))
 	{
-		$var = ($type)SvIV((SV*)SvRV( $arg ));
-		CLASS = HvNAME(SvSTASH(SvRV(ST(0))));
+		MAGIC *mg = mg_find(SvRV($arg), '~');
+		if (mg == NULL)
+		{
+			warn(\"${Package}::$func_name() -- $var not magical\");
+			XSRETURN_UNDEF;
+		}
+		$var = ($type)SvIV(mg->mg_obj);
+		CLASS = HvNAME(SvSTASH(SvRV( $arg )));
 	}
 	else
 	{
@@ -42,17 +48,21 @@ T_INT
 	$var = (int)SvIV($arg);
 
 OUTPUT
-T_CODEREF
-	$arg = newRV((SV*)$var);
 T_CONTEXT
-	if (CLASS != NULL)
+	if ($var == NULL)
 	{
-		sv_setref_pv($arg, CLASS, (void*)$var);
+		XSRETURN_UNDEF;
 	}
 	else
 	{
-		sv_setref_pv($arg, TEMPLATE_PACKAGE, (void *)$var);
+		SV *tc = sv_newmortal();
+		sv_magic(tc, sv_2mortal(newSViv((I32)$var)), '~', NULL, 0);
+		$arg = sv_bless(newRV(tc), gv_stashpv((CLASS == NULL)
+		                                      ? TEMPLATE_PACKAGE
+		                                      : CLASS, 0));
 	}
+T_CODEREF
+	$arg = newRV((SV*)$var);
 T_CHARSTAR
 	sv_setpv((SV *)$arg, $var);
 T_INT

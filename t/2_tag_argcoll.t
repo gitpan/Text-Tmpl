@@ -39,5 +39,3 @@ if ($output ne $compare) {
 } else {
     print "ok 1\n";
 }
-
-Text::Tmpl::destroy($context);

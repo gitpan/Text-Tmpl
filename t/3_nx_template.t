@@ -30,5 +30,3 @@ if (defined $output) {
 } else {
     print "ok 3\n";
 }
-
-Text::Tmpl::destroy($context);

@@ -34,6 +34,11 @@ foreach my $number (0 .. 10) {
     $subcontext->set_value('index', $number);
 }
 
+{
+    my $subcontext = $context->fetch_loop_iteration('loop1', 8);
+    $subcontext->set_value('index', 'overwritten');
+}
+
 $output = $context->parse_file(TEMPLATE);
 
 if ($output ne $compare) {
@@ -41,5 +46,3 @@ if ($output ne $compare) {
 } else {
     print "ok 1\n";
 }
-
-Text::Tmpl::destroy($context);

@@ -15,6 +15,10 @@ context_p
 template_init()
 	PREINIT:
 		char *CLASS = NULL;
+		MAGIC *mg   = NULL;
+	CLEANUP:
+		mg = mg_find(SvRV(ST(0)), '~');
+		mg->mg_len = 1;
 
 int
 template_set_delimiters(ctx, opentag, closetag)
@@ -64,10 +68,18 @@ template_errno()
 		RETVAL
 
 void
-template_destroy(ctx)
+template_DESTROY(ctx)
 	context_p	ctx
 	PREINIT:
-		char *CLASS = NULL;
+		char *CLASS      = NULL;
+		MAGIC *mg        = mg_find(SvRV(ST(0)), '~');
+		int  destroyme   = mg->mg_len;
+	CODE:
+		if (destroyme)
+		{
+		    template_destroy(ctx);
+		    mg->mg_len = 0;
+		}
 
 context_p
 template_loop_iteration(ctx, loop_name)
@@ -84,6 +96,32 @@ template_loop_iteration(ctx, loop_name)
 		r_loop_name = (char *)SvPV(loop_name, PL_na);
 	CODE:
 		RETVAL = template_loop_iteration(ctx, r_loop_name);
+	OUTPUT:
+		RETVAL
+
+context_p
+template_fetch_loop_iteration(ctx, loop_name, iteration)
+	context_p	ctx
+	SV *		loop_name
+	SV *		iteration
+	PREINIT:
+		char *CLASS       = NULL;
+		char *r_loop_name = NULL;
+		int  r_iteration  = -1;
+	INIT:
+		if (loop_name == &PL_sv_undef)
+		{
+		    XSRETURN_UNDEF;
+		}
+		if (iteration == &PL_sv_undef)
+		{
+		    XSRETURN_UNDEF;
+		}
+		r_loop_name = (char *)SvPV(loop_name, PL_na);
+		r_iteration = SvIV(iteration);
+	CODE:
+		RETVAL = template_fetch_loop_iteration(ctx, r_loop_name,
+		                                       r_iteration);
 	OUTPUT:
 		RETVAL
 

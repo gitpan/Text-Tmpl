@@ -1,3 +1,17 @@
+	- removed calls to destroy() from tests
+	- added destroy() to Tmpl.pm for backwards compatibility, and removed
+	  references to destroy() from documentation
+	- made destructor work without explicit calling by piggybacking in the
+	  MAGIC structure
+	- updated typemap and perl_tags.c to use '~' magic for storage of
+	  context_p variables, so that the pointer can't be changed from Perl
+	- updated parse_arg() to use append_output() for string management
+	- fixed a minor bug in the typemap
+	- added template_fetch_loop_iteration function, for loading an
+	  existing iteration from a loop by number; added related tests
+	  and XS code
+	- removed some debugging code which was accidentally released
+	- made 2_debug.t test the debug tag more rigorously
 0.21	- bugfix release
 	- fixed a severe bug which broke debugging output completely - the
 	  non-anonymous children of anonymous contexts were incorrectly

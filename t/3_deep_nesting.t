@@ -1,6 +1,6 @@
 use strict;
 
-BEGIN { $^W = 1; $| = 1; print "1..2\n"; }
+BEGIN { $^W = 1; $| = 1; print "1..1\n"; }
 
 use Text::Tmpl;
 
@@ -27,6 +27,3 @@ if ($okay) {
 } else {
     print "not ok 1\n";
 }
-
-$context->destroy();
-print "ok 2\n";

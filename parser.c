@@ -8,7 +8,6 @@
  * ==================================================================== */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -369,7 +368,7 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
     i       = 0;
     index   = 0;
     cursize = (size * 2) + 1;
-    *outarg = (char *)calloc(1, cursize);
+    *outarg = (char *)malloc(cursize);
 
     /* move past leading whitespace */
     for (begin = inarg; isspace((int)*begin); ++begin, ++i) ;
@@ -380,13 +379,14 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
     {
         if (*p == '"')
         {
-            --index;
             if (instring)
             {
                 if (last == '\\')
                 {
-                    (*outarg)[index] = '"';
-                } else {
+                    --index;
+                    append_output(outarg, "\"", 1, &cursize, &index);
+                } else
+                {
                     instring = 0;
                 }
             } else if (! instring)
@@ -397,7 +397,7 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
         {
             if (instring)
             {
-                (*outarg)[index] = *p;
+                append_output(outarg, p, 1, &cursize, &index);
             } else
             {
                 int length;
@@ -414,25 +414,9 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
                 varvalue = context_get_value(ctx, varname);
                 if (varvalue != NULL)
                 {
-                    length = strlen(varvalue);
-                    while ((index + length + 1) > cursize)
-                    {
-                        char *t;
-
-                        cursize = cursize * 2;
-                        t = (char *)calloc(1, cursize);
-                        strncpy(t, *outarg, index);
-
-                        free(*outarg);
-                        *outarg = t;
-                    }
-
-                    strncat(&((*outarg)[index]), varvalue, length);
-                    index += length - 1;
+                    append_output(outarg, varvalue, strlen(varvalue),
+                                  &cursize, &index);
                     --p;
-                } else
-                {
-                    --index;
                 }
                 free(varname);
             }
@@ -440,34 +424,13 @@ parse_arg(context_p ctx, char *inarg, int size, char **outarg)
         {
             if (instring)
             {
-                (*outarg)[index] = *p;
-            } else
-            {
-                --index;
+                append_output(outarg, p, 1, &cursize, &index);
             }
-        }
-
-
-        ++index;
-        if ((index + 1) >= cursize)
-        {
-            char *t;
-
-            if ((index + 1) >= (cursize * 2))
-            {
-                cursize = index + 1;
-            } else
-            {
-                cursize = cursize * 2;
-            }
-            t = (char *)malloc(cursize);
-            strncpy(t, *outarg, index);
-            t[index] = '\0';
-
-            free(*outarg);
-            *outarg = t;
         }
     }
+
+    /* ensure null termination even if append_output was never called */
+    (*outarg)[index] = '\0';
 }
 
 

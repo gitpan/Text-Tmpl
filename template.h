@@ -57,6 +57,8 @@ int       template_set_dir(context_p ctx, char *directory);
 int       template_set_value(context_p ctx, char *name, char *value);
 void      template_destroy(context_p ctx);
 context_p template_loop_iteration(context_p ctx, char *loop_name);
+context_p template_fetch_loop_iteration(context_p ctx, char *loop_name,
+                                        int iteration);
 int       template_parse_string(context_p ctx, char *tmpl, char **output);
 int       template_parse_file(context_p ctx, char *template_filename,
                               char **output);
