@@ -10,6 +10,7 @@ perl_tags.h
 libtmpl.pod
 template_syntax.pod
 template_extend.pod
+test.tmpl
 test.pl
 libtmpl/Makefile
 libtmpl/context.c
