@@ -130,6 +130,76 @@ tagplist_alias(tagplist_p *tag_pair_list, char *old_open_name,
 
 
 /* ====================================================================
+ * NAME:          tagplist_remove
+ *
+ * DESCRIPTION:   Remove a tag pair.
+ *
+ * RETURN VALUES: None.
+ *
+ * BUGS:          Hopefully none.
+ * ==================================================================== */
+void
+tagplist_remove(tagplist_p *tag_pair_list, char *open_name)
+{
+    tagplist_p current  = *tag_pair_list;
+    tagplist_p previous = NULL;
+
+    /* Make sure the name isn't NULL */
+    if (open_name == NULL)
+    {
+        template_errno = TMPL_ENULLARG;
+        return;
+    }
+
+    /* Make sure the pointer passed in wasn't NULL */
+    if (*tag_pair_list == NULL)
+    {
+        template_errno = TMPL_ENULLARG;
+        return;
+    }
+
+    while (current != NULL)
+    {
+        if ((current->open_name != NULL)
+         && (strcmp(current->open_name, open_name) == 0))
+        {
+            break;
+        }
+        previous = current;
+        current  = current->next;
+    }
+
+    /* The tag wasn't found */
+    if (current == NULL)
+    {
+        return;
+    }
+
+    /* Move a pointer to skip the found tag */
+    if (previous == NULL)
+    {
+        *tag_pair_list = current->next;
+    } else
+    {
+        previous->next = current->next;
+    }
+
+    /* Destroy the tag */
+    current->next = NULL;
+    if (current->open_name != NULL)
+    {
+        free(current->open_name);
+    }
+    if (current->close_name != NULL)
+    {
+        free(current->close_name);
+    }
+    free(current);
+}
+
+
+
+/* ====================================================================
  * NAME:          tagplist_register
  *
  * DESCRIPTION:   Register a new tag pair and associated function to call.

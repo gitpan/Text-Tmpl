@@ -214,19 +214,9 @@ simple_tag_include(context_p ctx, char **output, int argc, char **argv)
             rootctx->bufsize = size;
         }
 
-        if (dir[strlen(dir)] == '/')
-        {
-            strcpy(rootctx->buffer, dir);
-            strcat(rootctx->buffer, argv[1]);
-            (rootctx->buffer)[size - 1] = '\0';
-        }
-        else
-        {
-            strcpy(rootctx->buffer, dir);
-            strcat(rootctx->buffer, "/");
-            strcat(rootctx->buffer, argv[1]);
-            (rootctx->buffer)[size] = '\0';
-        }
+        strcpy(rootctx->buffer, dir);
+        strcat(rootctx->buffer, argv[1]);
+        (rootctx->buffer)[size - 1] = '\0';
 
         if (stat(rootctx->buffer, &finfo) != 0)
         {

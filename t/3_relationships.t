@@ -1,13 +1,12 @@
 use strict;
-
-BEGIN { $^W = 1; $| = 1; }
-
-use Text::Tmpl;
+use Test;
 
 use constant MAXVARNAMESIZE => 100;
 use constant MAXCONTENTSIZE => 100;
 
-print '1..', MAXVARNAMESIZE, "\n";
+BEGIN { plan tests => MAXVARNAMESIZE }
+
+use Text::Tmpl;
 
 foreach my $varnamesize ( 1 .. MAXVARNAMESIZE ) {
     my $varname  = 'a' x $varnamesize;
@@ -22,11 +21,7 @@ foreach my $varnamesize ( 1 .. MAXVARNAMESIZE ) {
 
     my $output = $ctx->parse_string($template);
 
-    if ($output ne 'v' x numo(MAXCONTENTSIZE)) {
-        print "not ok $varnamesize\n";
-    } else {
-        print "ok $varnamesize\n";
-    }
+    ok($output, 'v' x numo(MAXCONTENTSIZE));
 }
 
 sub numo {

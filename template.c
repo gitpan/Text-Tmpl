@@ -9,11 +9,13 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/param.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#ifndef WIN32
+#include <sys/param.h>
 #include <unistd.h>
+#endif
 
 #include <template.h>
 #include <default_tags.h>
@@ -255,6 +257,66 @@ template_register_simple(context_p ctx, char *name,
 
 
 /* ====================================================================
+ * NAME:          template_remove_simple
+ *
+ * DESCRIPTION:   Removes a simple tag from the simple tag list.
+ *
+ * RETURN VALUES: None.
+ *
+ * BUGS:          Hopefully none.
+ * ==================================================================== */
+void
+template_remove_simple(context_p ctx, char *name)
+{
+    context_p current;
+
+    if (ctx == NULL)
+    {
+        template_errno = TMPL_ENULLARG;
+        return;
+    }
+
+    current = context_root(ctx);
+    staglist_remove(&(current->simple_tags), name);
+}
+
+
+
+/* ====================================================================
+ * NAME:          template_remove_pair
+ *
+ * DESCRIPTION:   Removes a tag pair from the tag pair list.
+ *
+ * RETURN VALUES: None.
+ *
+ * BUGS:          Hopefully none.
+ * ==================================================================== */
+void
+template_remove_pair(context_p ctx, char *open_name)
+{
+    context_p current;
+
+    if (ctx == NULL)
+    {
+        template_errno = TMPL_ENULLARG;
+        return;
+    }
+
+    current = context_root(ctx);
+    tagplist_remove(&(current->tag_pairs), open_name);
+}
+
+
+
+
+
+/* ====================================================================
+ * NAME:          template_alias_simple
+ *
+
+
+
+/* ====================================================================
  * NAME:          template_alias_simple
  *
  * DESCRIPTION:   Copy an existing tag pair to a new tag pair name.
@@ -349,19 +411,9 @@ template_parse_file(context_p ctx, char *template_filename, char **output)
         int size  = strlen(template_filename) + strlen(dir) + 2;
 
         real_filename = (char *)malloc(size);
-        if (dir[strlen(dir)] == '/')
-        {
-            strcpy(real_filename, dir);
-            strcat(real_filename, "/");
-            strcat(real_filename, template_filename);
-            real_filename[size] = '\0';
-        }
-        else
-        {
-            strcpy(real_filename, dir);
-            strcat(real_filename, template_filename);
-            real_filename[size - 1] = '\0';
-        }
+        strcpy(real_filename, dir);
+        strcat(real_filename, template_filename);
+        real_filename[size - 1] = '\0';
 
         if (stat(real_filename, &finfo) != 0)
         {

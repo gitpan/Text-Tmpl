@@ -119,6 +119,71 @@ staglist_alias(staglist_p *simple_tag_list, char *old_name, char *new_name)
 
 
 /* ====================================================================
+ * NAME:          staglist_remove
+ *
+ * DESCRIPTION:   Remove a tag.
+ *
+ * RETURN VALUES: None.
+ *
+ * BUGS:          Hopefully none.
+ * ==================================================================== */
+void
+staglist_remove(staglist_p *simple_tag_list, char *name)
+{
+    staglist_p current  = *simple_tag_list;
+    staglist_p previous = NULL;
+
+    /* Make sure the name isn't NULL */
+    if (name == NULL)
+    {
+        template_errno = TMPL_ENULLARG;
+        return;
+    }
+
+    /* Make sure the pointer passed in wasn't NULL */
+    if (*simple_tag_list == NULL)
+    {
+        template_errno = TMPL_ENULLARG;
+        return;
+    }
+
+    while (current != NULL)
+    {
+        if ((current->name != NULL) && (strcmp(current->name, name) == 0))
+        {
+            break;
+        }
+        previous = current;
+        current = current->next;
+    }
+
+    /* The tag wasn't found */
+    if (current == NULL)
+    {
+        return;
+    }
+
+    /* Move a pointer to skip the found tag */
+    if (previous == NULL)
+    {
+        *simple_tag_list = current->next;
+    } else
+    {
+        previous->next = current->next;
+    }
+
+    /* Destroy the tag */
+    current->next = NULL;
+    if (current->name != NULL) 
+    {
+        free(current->name);
+    }
+    free(current);
+}
+
+
+
+/* ====================================================================
  * NAME:          staglist_register
  *
  * DESCRIPTION:   Register a new tag and associated function to call.

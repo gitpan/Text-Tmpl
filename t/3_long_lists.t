@@ -1,6 +1,7 @@
 use strict;
+use Test;
 
-BEGIN { $^W = 1; $| = 1; print "1..2\n"; }
+BEGIN { plan tests => 2 }
 
 use Text::Tmpl;
 
@@ -8,11 +9,7 @@ my($return, $okay, $loop_number, $subcontext);
 my $context = new Text::Tmpl;
 
 $return = $context->set_values({ ( 1 .. 5000 ) });
-if (! $return) {
-    print "not ok 1\n";
-} else {
-    print "ok 1\n";
-}
+ok($return);
 
 $okay = 1;
 foreach (1 .. 5000) {
@@ -22,8 +19,4 @@ foreach (1 .. 5000) {
         last;
     }
 }
-if (! $okay) {
-    print "not ok 2\n";
-} else {
-    print "ok 2\n";
-}
+ok($okay);

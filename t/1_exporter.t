@@ -1,29 +1,17 @@
 use strict;
-use vars qw($loaded);
+use Test;
 
-BEGIN { $^W = 1; $| = 1; print "1..3\n"; }
+BEGIN { plan tests => 3 }
  
 use Text::Tmpl qw(TEMPLATE_TRUE
                   TEMPLATE_FALSE);
 
 my $return;
 my($context) = new Text::Tmpl;
-if (! defined($context)) {
-    print "not ok 1\n";
-} else {
-    print "ok 1\n";
-}
+ok(defined $context);
 
 $return = $context->set_value('foo', TEMPLATE_TRUE);
-if (! $return) {
-    print "not ok 2\n";
-} else {
-    print "ok 2\n";
-}
+ok($return);
 
 $return = $context->set_value('foo', TEMPLATE_FALSE);
-if (! $return) {
-    print "not ok 3\n";
-} else {
-    print "ok 3\n";
-}
+ok($return);

@@ -15,6 +15,7 @@
 #include <XSUB.h>
 
 #include <context.h>
+#include <template.h>
 
 #include "ppport.h"
 

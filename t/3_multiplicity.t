@@ -1,6 +1,7 @@
 use strict;
+use Test;
 
-BEGIN { $^W = 1; $| = 1; print "1..1\n"; }
+BEGIN { plan tests => 1 }
 
 use IO::File;
 use Text::Tmpl;
@@ -12,21 +13,19 @@ my($compare, $output);
 
 my $context = new Text::Tmpl;
 if (! defined $context) {
-    print "not ok 1\n";
+    ok(0);
     exit(0);
 }
 my $context2 = new Text::Tmpl;
 if (! defined $context) {
-    print "not ok 1\n";
+    ok(0);
     exit(0);
 }
 my $comp_fh = new IO::File COMPARE, 'r';
 if (! defined $comp_fh) {
-    print "not ok 1\n";
+    ok(0);
     exit(0);
 }
-
-# $context2->destroy();
 
 {
     local $/ = undef;
@@ -40,8 +39,4 @@ $context->set_value('var1', 'value1');
 $context->set_value('var2', 'value2');
 $output = $context->parse_file(TEMPLATE);
 
-if ($output ne $compare) {
-    print "not ok 1\n";
-} else {
-    print "ok 1\n";
-}
+ok($output, $compare);

@@ -6,7 +6,7 @@ use vars qw($VERSION @ISA $AUTOLOAD @EXPORT_OK);
 use constant TEMPLATE_TRUE  => '1';
 use constant TEMPLATE_FALSE => '0';
 
-$VERSION = '0.23';
+$VERSION = '0.24';
 
 use Exporter;
 
@@ -126,6 +126,10 @@ $return     = $context->B<alias_pair>($old_open_name,
                  $old_close_name, $new_open_name,
                  $new_close_name);
 
+$context->B<remove_simple>($name);
+
+$context->B<remove_pair>($open_name);
+
 $context->B<set_debug>($to_debug_or_not_to_debug);
 
 $context->B<set_strip>($to_strip_or_not_to_strip);
@@ -137,6 +141,9 @@ $return     = $context->B<set_value>($name, $value);
 $return     = $context->B<set_values>($hashref);
 
 $subcontext = $context->B<loop_iteration>($loop_name);
+
+$subcontext = $context->B<fetch_loop_iteration>($loop_name,
+                 $iteration_number);
 
 $output     = $context->B<parse_file>($template_filename);
 
@@ -201,10 +208,19 @@ This function sets the directory where templates will be sought, both by
 parse_file and by the include tag.  Search order is always current directory
 then this searched directory.
 
+This directory must contain all the necessary punctuation so that appending
+a filename to it produces a valid path (On unix systems, you have to include
+the trailing slash on the directory name).
+
 =item B<loop_iteration>
 
 This function adds an iteration to the loop named loop_name, and returns
 a unique context for that loop iteration.
+
+=item B<fetch_loop_iteration>
+
+This function retrieves and returns the context for $iteration_number
+from the loop named $loop_name.
 
 =item B<parse_file>
 
@@ -238,6 +254,14 @@ $old_name, to also be called by $new_name.
 This function copies the definition of a tag pair, previously registered as
 $old_open_name/$old_close_name, to also be called by
 $new_open_name/$new_close_name.
+
+=item B<remove_simple>
+
+This function removes the simple tag $name.
+
+=item B<remove_pair>
+
+This function removes the tag pair whose open tag is $open_name.
 
 =item B<errno>
 

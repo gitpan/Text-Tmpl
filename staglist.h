@@ -25,6 +25,7 @@ int        staglist_alias(staglist_p *simple_tag_list, char *old_name,
                           char *new_name);
 int        staglist_register(staglist_p *simple_tag_list, char *name,
                              void (*function)(context_p, char **, int, char**));
+void       staglist_remove(staglist_p *simple_tag_list, char *name);
 int        staglist_exists(staglist_p simple_tag_list, char *name);
 int        staglist_exec(staglist_p simple_tag_list, char *name, context_p ctx,
                          char **output, int argc, char **argv);

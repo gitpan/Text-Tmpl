@@ -1,7 +1,7 @@
 use strict;
-use vars qw($loaded);
+use Test;
 
-BEGIN { $^W = 1; $| = 1; print "1..10\n"; }
+BEGIN { plan tests => 10 }
 
 package Text::Tmpl::TestSubClass;
 
@@ -34,12 +34,12 @@ my($return, $subcontext, $output, $compare);
 
 my $context = new Text::Tmpl::TestSubClass;
 if (! defined($context)) {
-    print "not ok 1\n";
+    ok(0);
     exit(0);
 }
 my $comp_fh = new IO::File COMPARE, 'r';
 if (! defined $comp_fh) {
-    print "not ok 1\n";
+    ok(0);
     exit(0);
 }
 
@@ -50,62 +50,30 @@ if (! defined $comp_fh) {
 
 $comp_fh->close;
 
-print "ok 1\n";
+ok(1);
 
 $return = $context->set_strip(0);
-print "ok 2\n";
+ok(1);
 
 $return = $context->test_sub;
-if (! $return) {
-    print "not ok 3\n";
-} else {
-    print "ok 3\n";
-}
+ok($return);
 
 $return = $context->set_value('foo', 'bar');
-if (! $return) {
-    print "not ok 4\n";
-} else {
-    print "ok 4\n";
-}
+ok($return);
 
 $subcontext = $context->loop_iteration('foo');
-if (! defined $subcontext) {
-    print "not ok 5\n";
-} else {
-    print "ok 5\n";
-}
+ok($return);
 
 $subcontext = $context->fetch_loop_iteration('foo', 0);
-if (! defined $subcontext) {
-    print "not ok 6\n";
-} else {
-    print "ok 6\n";
-}
+ok(defined $subcontext);
 
 $return = $subcontext->set_value('bar', 'baz');
-if (! $return) {
-    print "not ok 7\n";
-} else {
-    print "ok 7\n";
-}
+ok($return);
 
 $return = $subcontext->test_sub;
-if (! $return) {
-    print "not ok 8\n";
-} else {
-    print "ok 8\n";
-}
+ok($return);
 
 $output = $context->parse_file(TEMPLATE);
-if (! defined($output)) {
-    print "not ok 9\n";
-} else {
-    print "ok 9\n";
-}
+ok(defined $output);
 
-if ($output ne $compare) {
-    print "not ok 10\n";
-} else {
-    print "ok 10\n";
-}
+ok($output, $compare);

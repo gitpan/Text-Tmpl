@@ -15,17 +15,3 @@ WriteMakefile(
                         'template_syntax.pod' => 'blib/man3/template_syntax.3',
                       },
 );
-
-package MY;
-
-sub postamble { '
-
-TMPL_OBJS=context.o default_tags.o nclist.o parser.o \
-          staglist.o tagplist.o template.o varlist.o \
-          tokens.o
-
-libtmpl.a: ${TMPL_OBJS}
-	rm -f $@
-	ar cr $@ ${TMPL_OBJS}
-	ranlib $@
-'; }

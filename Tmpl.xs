@@ -230,7 +230,7 @@ template_alias_simple(ctx, old_name, new_name)
 		if (hv_exists(perl_simple_tags, key, strlen(key)))
 		{
 			stags = (HV *)SvRV(*(hv_fetch(perl_simple_tags, key,
-			                                  strlen(key), FALSE)));
+			                              strlen(key), FALSE)));
 			if (hv_exists(stags, old_name, strlen(old_name)))
 			{
 				cref = *(hv_fetch(stags, old_name,
@@ -247,6 +247,34 @@ template_alias_simple(ctx, old_name, new_name)
 		RETVAL = template_alias_simple(ctx, old_name, new_name);
 	OUTPUT:
 		RETVAL
+
+
+void
+template_remove_simple(ctx, name)
+	context_p	ctx
+	char *		name
+	PREINIT:
+		char *CLASS = NULL;
+		HV *perl_simple_tags = perl_get_hv(PERL_TAGS_SIMPLE_TAG_HASH,
+		                                   TRUE);
+                HV *stags            = NULL;
+		char key[20];
+	INIT:
+		snprintf(key, 20, "%p", context_root(ctx));
+
+		if (hv_exists(perl_simple_tags, key, strlen(key)))
+		{
+			stags = (HV *)SvRV(*hv_fetch(perl_simple_tags, key,
+			                             strlen(key), FALSE));
+		}
+	CODE:
+		if ((stags != NULL)
+                 && (hv_exists(stags, name, strlen(name))))
+		{
+			hv_delete(stags, name, strlen(name), G_DISCARD);
+		}
+		template_remove_simple(ctx, name);
+
 		
 
 int
@@ -324,6 +352,32 @@ template_alias_pair(ctx,old_open_name,old_close_name,new_open_name,new_close_nam
 		                             new_close_name);
 	OUTPUT:
 		RETVAL
+
+void
+template_remove_pair(ctx, open_name)
+        context_p       ctx
+        char *          open_name
+        PREINIT:
+                char *CLASS = NULL;
+                HV *perl_tag_pairs = perl_get_hv(PERL_TAGS_TAG_PAIR_HASH, TRUE);
+                HV *tagps          = NULL;
+                char key[20];
+        INIT:
+                snprintf(key, 20, "%p", context_root(ctx));
+
+		if (hv_exists(perl_tag_pairs, key, strlen(key)))
+		{
+			tagps = (HV *)SvRV(*hv_fetch(perl_tag_pairs, key,
+			                             strlen(key), FALSE));
+		}
+        CODE:
+                if ((tagps != NULL)
+                 && (hv_exists(tagps, open_name, strlen(open_name))))
+                {
+                        hv_delete(tagps, open_name, strlen(open_name),
+                                  G_DISCARD);
+                }
+                template_remove_pair(ctx, open_name);
 
 char *
 context_get_value(ctx, name)

@@ -6,6 +6,10 @@
 #include <default_tags.h>
 #include <tokens.h>
 
+#ifdef WIN32
+#define snprintf _snprintf
+#endif
+
 #ifndef __TEMPLATE_H
 #define __TEMPLATE_H
 
@@ -51,12 +55,14 @@ int       template_set_delimiters(context_p ctx, char *opentag,
 int       template_register_simple(context_p ctx, char *name,
                              void (*function)(context_p, char **, int, char**));
 int       template_alias_simple(context_p ctx, char *old_name, char *new_name);
+void      template_remove_simple(context_p ctx, char *name);
 int       template_register_pair(context_p ctx, char named_context,
                                  char *open_name, char *close_name,
                                  void (*function)(context_p, int, char**));
 int       template_alias_pair(context_p ctx, char *old_open_name,
                               char *old_close_name, char *new_open_name,
                               char *new_close_name);
+void      template_remove_pair(context_p ctx, char *open_name);
 void      template_set_debug(context_p ctx, int debug_level);
 void      template_set_strip(context_p ctx, int strip);
 context_p template_loop_iteration(context_p ctx, char *loop_name);

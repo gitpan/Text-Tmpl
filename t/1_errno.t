@@ -1,50 +1,30 @@
 use strict;
-use vars qw($loaded);
+use Test;
 
-BEGIN { $^W = 1; $| = 1; print "1..5\n"; }
+BEGIN { plan tests => 5 }
 
 use Text::Tmpl;
 
 my($return, $errno, $errstr);
 my($context) = Text::Tmpl::init();
-if (! defined($context)) {
-    print "not ok 1\n";
-} else {
-    print "ok 1\n";
-}
+ok(defined $context);
 
 $return = $context->parse_file('nonexistent.tmpl');
 $errno  = Text::Tmpl::errno();
 $errstr = Text::Tmpl::strerror();
-if (($return) || ($errno != 8) || ($errstr ne 'file not found')) {
-    print "not ok 2\n";
-} else {
-    print "ok 2\n";
-}
+ok((! $return) && ($errno == 8) && ($errstr eq 'file not found'));
 
 $return = $context->context_get_value('nonexistent');
 $errno  = Text::Tmpl::errno();
 $errstr = Text::Tmpl::strerror();
-if (($return) || ($errno != 4) || ($errstr ne 'no such variable')) {
-    print "not ok 3\n";
-} else {
-    print "ok 3\n";
-}
+ok((! $return) && ($errno == 4) && ($errstr eq 'no such variable'));
 
 $return = $context->context_get_named_child('nonexistent');
 $errno  = Text::Tmpl::errno();
 $errstr = Text::Tmpl::strerror();
-if (($return) || ($errno != 5) || ($errstr ne 'no such named context')) {
-    print "not ok 4\n";
-} else {
-    print "ok 4\n";
-}
+ok((! $return) && ($errno == 5) && ($errstr eq 'no such named context'));
 
 $return = $context->parse_string('<!--#loop "unbalanced"');
 $errno  = Text::Tmpl::errno();
 $errstr = Text::Tmpl::strerror();
-if (($errno != 10) || ($errstr ne 'unable to parse')) {
-    print "not ok 5\n";
-} else {
-    print "ok 5\n";
-}
+ok(($errno == 10) && ($errstr eq 'unable to parse'));

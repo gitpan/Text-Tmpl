@@ -67,6 +67,18 @@ public:
     }
 
     void
+    remove_simple(char *name)
+    {
+        template_remove_simple(t, name);
+    }
+
+    void
+    remove_pair(char *open_name)
+    {
+        template_remove_pair(t, open_name);
+    }
+
+    void
     set_debug(int debug_level)
     {
         template_set_debug(t, debug_level);
@@ -94,6 +106,12 @@ public:
     loop_iteration(char *loop_name)
     {
         return (tmpl)template_loop_iteration(t, loop_name);
+    }
+
+    tmpl
+    fetch_loop_iteration(char *loop_name, int iteration)
+    {
+        return (tmpl)template_fetch_loop_iteration(t, loop_name, iteration);
     }
 
     int

@@ -1,6 +1,7 @@
 use strict;
+use Test;
 
-BEGIN { $^W = 1; $| = 1; print "1..13\n"; }
+BEGIN { plan tests => 13 }
 
 use Text::Tmpl;
 
@@ -8,92 +9,40 @@ my($return, $subcontext);
 my $context = new Text::Tmpl;
 
 $return = $context->set_delimiters(undef, undef);
-if ($return) {
-    print "not ok 1\n";
-} else {
-    print "ok 1\n";
-}
+ok(! $return);
 
 $return = $context->register_simple(undef, undef);
-if ($return) {
-    print "not ok 2\n";
-} else {
-    print "ok 2\n";
-}
+ok(! $return);
 
 $return = $context->register_pair(undef, undef, undef, undef);
-if ($return) {
-    print "not ok 3\n";
-} else {
-    print "ok 3\n";
-}
+ok(! $return);
 
 $return = $context->set_debug(undef);
-if ($return) {
-    print "not ok 4\n";
-} else {
-    print "ok 4\n";
-}
+ok(! $return);
 
 $return = $context->set_strip(undef);
-if ($return) {
-    print "not ok 5\n";
-} else {
-    print "ok 5\n";
-}
+ok(! $return);
 
 $return = $context->set_dir(undef);
-if ($return) {
-    print "not ok 6\n";
-} else {
-    print "ok 6\n";
-}
+ok(! $return);
 
 $return = $context->set_value(undef, undef);
-if ($return) {
-    print "not ok 7\n";
-} else {
-    print "ok 7\n";
-}
+ok(! $return);
 
 $return = $context->set_values(undef);
-if ($return) {
-    print "not ok 8\n";
-} else {
-    print "ok 8\n";
-}
+ok(! $return);
 
 $return = $context->set_values({ 'key' => undef });
-if (! $return) {
-    print "not ok 9\n";
-} else {
-    print "ok 9\n";
-}
+ok($return);
 
 $subcontext = $context->loop_iteration(undef);
-if (defined $subcontext) {
-    print "not ok 10\n";
-} else {
-    print "ok 10\n";
-}
+ok(! defined $subcontext);
 
 $return = $context->alias_simple(undef, undef);
-if ($return) {
-    print "not ok 11\n";
-} else {
-    print "ok 11\n";
-}
+ok(! $return);
 
 $return = $context->alias_pair(undef, undef, undef, undef);
-if ($return) {
-    print "not ok 12\n";
-} else {
-    print "ok 12\n"
-}
+ok(! $return);
 
 $subcontext = $context->fetch_loop_iteration(undef, undef);
-if (defined $subcontext) {
-    print "not ok 13\n";
-} else {
-    print "ok 13\n";
-}
+ok(! defined $subcontext);

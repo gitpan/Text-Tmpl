@@ -31,6 +31,12 @@ B<template_alias_pair>(context_p ctx,
    char *old_open_name, char *old_close_name,
    char *new_open_name, char *new_close_name)
 
+void
+B<template_remove_simple>(context_p ctx, char *name)
+
+void
+B<template_remove_pair>(context_p ctx, char *open_name)
+
 int
 B<template_set_value>(context_p ctx, char *name,
    char *value)
@@ -50,6 +56,10 @@ B<template_destroy>(context_p ctx)
 context_p
 B<template_loop_iteration>(context_p ctx,
    char *loop_name)
+
+context_p
+B<template_fetch_loop_iteration>(context_p ctx,
+   char *loop_name, int iteration)
 
 int
 B<template_parse_file>(context_p ctx,
@@ -120,6 +130,10 @@ This function sets the directory where templates will be sought, both by
 parse_file and by the include tag.  Search order is always current directory
 then this searched directory.
 
+This directory must contain all the necessary punctuation so that appending
+a filename to it produces a valid path (On unix systems, you have to include
+the trailing slash on the directory name).
+
 template_set_dir() can fail with TMPL_ENULLARG.
 
 =item B<template_loop_iteration>
@@ -127,7 +141,14 @@ template_set_dir() can fail with TMPL_ENULLARG.
 This function adds an iteration to the loop named loop_name, and returns
 a unique context for that loop iteration.
 
-template_loop_iteration() can fail with TMPL_ENULLARG, TMPL_EMALLOC.
+template_loop_iteration() can fail with TMPL_ENULLARG or TMPL_EMALLOC.
+
+=item B<template_fetch_loop_iteration>
+
+This function retrieves and returns the context for iteration number
+iteration from the loop named loop_name.
+
+template_fetch_loop_iteration() can fail with TMPL_ENULLARG or TMPL_ENOCTX.
 
 =item B<template_parse_file>
 
@@ -176,6 +197,18 @@ old_open_name/old_close_name, to also be called by
 new_open_name/new_close_name.
 
 template_alias_pair() can fail with TMPL_ENULLARG, TMPL_EMALLOC.
+
+=item B<template_remove_simple>
+
+This function removes the simple tag name.
+
+template_remove_simple() can fail with TMPL_ENULLARG.
+
+=item B<template_remove_pair>
+
+This function removes the tag pair whose open tag is open_name.
+
+template_remove_pair() can fail with TMPL_ENULLARG.
 
 =item B<template_destroy>
 

@@ -30,6 +30,7 @@ void       tagplist_destroy(tagplist_p tag_pair_list);
 int        tagplist_alias(tagplist_p *tag_pair_list, char *old_open_name,
                           char *old_close_name, char *new_open_name,
                           char *new_close_name);
+void       tagplist_remove(tagplist_p *tag_pair_list, char *open_name);
 int        tagplist_register(tagplist_p *tag_pair_list, char named_context,
                              char *open_name, char *close_name,
                              void (*function) (context_p, int, char**));

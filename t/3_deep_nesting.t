@@ -1,6 +1,7 @@
 use strict;
+use Test;
 
-BEGIN { $^W = 1; $| = 1; print "1..1\n"; }
+BEGIN { plan tests => 1 }
 
 use Text::Tmpl;
 
@@ -22,8 +23,4 @@ foreach (1 .. 5000) {
     }
 }
 
-if ($okay) {
-    print "ok 1\n";
-} else {
-    print "not ok 1\n";
-}
+ok($okay);
