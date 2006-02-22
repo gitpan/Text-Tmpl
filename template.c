@@ -92,7 +92,6 @@ template_init(void)
     template_register_pair(ctx, 0, "ifn",     "endifn",     tag_pair_ifn);
     template_register_pair(ctx, 0, "debug",   "enddebug",   tag_pair_debug);
 
-    ctx->buffer  = (char *)malloc(MAXPATHLEN);
     ctx->bufsize = MAXPATHLEN;
     ctx->buffer = (char *)malloc(MAXPATHLEN);
     getcwd(ctx->buffer, MAXPATHLEN);
