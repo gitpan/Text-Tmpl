@@ -1,3 +1,4 @@
+LICENSE
 MANIFEST
 README
 TODO
@@ -93,3 +94,4 @@ t/3_huge_input.tmpl
 t/3_huge_input.comp
 t/3_deep_nesting.t
 t/3_relationships.t
+META.yml                                 Module meta-data (added by MakeMaker)

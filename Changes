@@ -1,3 +1,7 @@
+0.31    - keeping up with the joneses release
+        - added META.yml
+        - added 'use warnings'
+        - switched from 'use vars' to 'our'
 0.30    - bugfix release
         - fixed 2 memory leaks (casret@pobox.com)
         - added tests for accidental, but useful, functionality

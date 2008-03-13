@@ -1,22 +1,22 @@
 package Text::Tmpl;
 
 use strict;
-use vars qw($VERSION @ISA $AUTOLOAD @EXPORT_OK);
+use warnings;
 
 use constant TEMPLATE_TRUE  => '1';
 use constant TEMPLATE_FALSE => '0';
 
-$VERSION = '0.30';
+our $VERSION = '0.31';
 
 use Exporter;
 
 require DynaLoader;
 require AutoLoader;
 
-@ISA = qw(DynaLoader Exporter);
+our @ISA = qw(DynaLoader Exporter);
 
-@EXPORT_OK = qw(TEMPLATE_TRUE
-                TEMPLATE_FALSE);
+our @EXPORT_OK = qw(TEMPLATE_TRUE
+                    TEMPLATE_FALSE);
 
 bootstrap Text::Tmpl $VERSION;
 
