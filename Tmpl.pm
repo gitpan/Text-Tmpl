@@ -6,7 +6,7 @@ use warnings;
 use constant TEMPLATE_TRUE  => '1';
 use constant TEMPLATE_FALSE => '0';
 
-our $VERSION = '0.31';
+our $VERSION = '0.32';
 
 use Exporter;
 

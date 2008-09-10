@@ -47,7 +47,7 @@ perl_simple_tag(context_p ctx, char **output, int argc, char **argv)
     snprintf(key, 20, "%p", context_root(ctx));
 
     /* Create and bless a perl version of the context */
-    sv_magic(tc, sv_2mortal(newSViv((I32)ctx)), '~', NULL, 0);
+    sv_magic(tc, sv_2mortal(newSViv((IV)ctx)), '~', NULL, 0);
     perlcontext = sv_bless(newRV(tc), gv_stashpv(TEMPLATE_PACKAGE, 0));
 
     /* Fetch a code reference out of the perl_simple_tags hash */
@@ -150,7 +150,7 @@ perl_tag_pair(context_p ctx, int argc, char **argv)
 
 
     /* Create and bless a perl version of the context */
-    sv_magic(tc, sv_2mortal(newSViv((I32)ctx)), '~', NULL, 0);
+    sv_magic(tc, sv_2mortal(newSViv((IV)ctx)), '~', NULL, 0);
     perlcontext = sv_bless(newRV(tc), gv_stashpv(TEMPLATE_PACKAGE, 0));
 
 

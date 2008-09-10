@@ -56,7 +56,7 @@ T_CONTEXT
 	else
 	{
 		SV *tc = sv_newmortal();
-		sv_magic(tc, sv_2mortal(newSViv((I32)$var)), '~', NULL, 0);
+		sv_magic(tc, sv_2mortal(newSViv((IV)$var)), '~', NULL, 0);
 		$arg = sv_bless(sv_2mortal(newRV(tc)), gv_stashpv((CLASS == NULL)
 		                                      ? TEMPLATE_PACKAGE
 		                                      : CLASS, 0));
